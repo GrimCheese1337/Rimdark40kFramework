@@ -14,6 +14,7 @@ namespace Core40k;
 public static class Core40kUtils
 {
     public static readonly Texture2D FlippedIconTex = ContentFinder<Texture2D>.Get("UI/Decoration/flipIcon");
+    public static readonly Texture2D LockedIconTex = ContentFinder<Texture2D>.Get("UI/Misc/LockedIcon");
     public static readonly Texture2D ScrollForwardIcon = ContentFinder<Texture2D>.Get ("UI/Misc/ScrollForwardIcon");
     public static readonly Texture2D ScrollBackwardIcon = ContentFinder<Texture2D>.Get ("UI/Misc/ScrollBackwardIcon");
     
@@ -80,7 +81,8 @@ public static class Core40kUtils
                 }
 
                 if (typeof(Comp_AmmoChanger).IsAssignableFrom(compProperties.compClass)
-                    || typeof(CompWeaponDecoration).IsAssignableFrom(compProperties.compClass))
+                    || typeof(CompWeaponDecoration).IsAssignableFrom(compProperties.compClass)
+                    || typeof(CompArtifactWeapon).IsAssignableFrom(compProperties.compClass))
                 {
                     result = true;
                     break;
@@ -457,4 +459,4 @@ public static class Core40kUtils
             }
         }
     }
-}
+}

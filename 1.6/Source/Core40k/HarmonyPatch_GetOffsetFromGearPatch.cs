@@ -20,6 +20,10 @@ public static class GetOffsetFromGearPatch
             {
                 __result += graphicComp.GetStatOffset(stat);
             }
+            else if (comp is CompArtifactWeapon artifact)
+            {
+                __result += artifact.GetWielderStatOffset(stat);
+            }
         }
     }
 }

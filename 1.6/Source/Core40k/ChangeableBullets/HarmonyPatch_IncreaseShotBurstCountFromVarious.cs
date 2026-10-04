@@ -13,7 +13,7 @@ public static class IncreaseShotBurstCountFromVarious
             return;
         }
 
-        if (!WeaponVerbCompCache.TryGet(__instance.EquipmentSource, out var ammoChangerComp, out var weaponDecoComp))
+        if (!WeaponVerbCompCache.TryGet(__instance.EquipmentSource, out var ammoChangerComp, out var weaponDecoComp, out var artifactComp))
         {
             return;
         }
@@ -25,6 +25,10 @@ public static class IncreaseShotBurstCountFromVarious
         if (weaponDecoComp != null)
         {
             __result += weaponDecoComp.AdditionalBurstShotCount;
+        }
+        if (artifactComp != null)
+        {
+            __result += artifactComp.AdditionalBurstShotCount;
         }
     }
 }

@@ -124,13 +124,18 @@ public class AlternateTextureBaseTab : CustomizerTabDrawer
                     }
                 
                     var tipTooltip = alternateByType.Value[i]?.LabelCap ?? "BEWH.Framework.Customization.BaseTexture".Translate() + alternateComp.parent.def.LabelCap;
-                    GUI.color = Mouse.IsOver(iconRect) ? GenUI.MouseoverColor : Color.white;
+                    var blockedByLock = BlockedByLockedDecoration(alternateComp, alternateByType.Value[i], out var lockReason);
+                    if (blockedByLock)
+                    {
+                        tipTooltip += "\n" + "BEWH.Framework.Customization.IncompatibleWithLockedDecoration".Translate(lockReason);
+                    }
+                    GUI.color = blockedByLock ? Color.gray : Mouse.IsOver(iconRect) ? GenUI.MouseoverColor : Color.white;
                     GUI.DrawTexture(iconRect, Command.BGTexShrunk);
                     GUI.color = Color.white;
                     GUI.DrawTexture(iconRect, alternateByType.Value[i]?.Icon ?? alternateComp.parent.def.uiIcon);
                     TooltipHandler.TipRegion(iconRect, tipTooltip);
-                
-                    if (Widgets.ButtonInvisible(iconRect))
+
+                    if (!blockedByLock && Widgets.ButtonInvisible(iconRect))
                     {
                         alternateComp.SetAlternateBaseForm(alternateByType.Value[i], alternateComp.parent is Apparel);
                     }
@@ -151,11 +156,40 @@ public class AlternateTextureBaseTab : CustomizerTabDrawer
         GUI.EndGroup();
     }
 
+    /// <summary>
+    /// An alternate form (or the base texture, when null) that would force off a locked decoration cannot be chosen.
+    /// </summary>
+    private static bool BlockedByLockedDecoration(CompAlternateTexture alternateComp, AlternateBaseFormDef alternate, out string reason)
+    {
+        reason = null;
+        var decorative = alternateComp.parent.GetComp<CompDecorativeBase>();
+        if (decorative == null || !decorative.AnyDecorationLocked)
+        {
+            return false;
+        }
+
+        foreach (var decoration in decorative.Decorations.Keys)
+        {
+            if (decoration == null)
+            {
+                continue;
+            }
+            var incompatible = alternate == null
+                ? decoration.isIncompatibleWithBaseTexture
+                : alternate.incompatibleDecorations.Contains(decoration);
+            if (incompatible && decorative.IsDecorationLocked(decoration, out reason))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public override void OnClose(Pawn pawn, bool closeOnCancel, bool closeOnClickedOutside)
     {
         OnReset(pawn);
     }
-    
+
     public override void OnReset(Pawn pawn)
     {
         foreach (var alternateComp in alternateComps)
@@ -163,4 +197,4 @@ public class AlternateTextureBaseTab : CustomizerTabDrawer
             alternateComp.Reset();
         }
     }
-}
+}

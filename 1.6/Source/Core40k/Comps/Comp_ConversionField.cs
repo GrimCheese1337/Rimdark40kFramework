@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using RimWorld;
+using UnityEngine;
+using VEF.AestheticScaling;
 using Verse;
+using Verse.Sound;
 
 namespace Core40k;
 
@@ -12,6 +15,13 @@ namespace Core40k;
 [StaticConstructorOnStartup]
 public class Comp_ConversionField : CompShield
 {
+    private static readonly Material FieldBubbleMat = MaterialPool.MatFrom("Other/ShieldBubble", ShaderDatabase.Transparent);
+
+    private Vector3 fieldImpactAngleVect;
+    private int fieldLastAbsorbDamageTick = -9999;
+
+    private CompProperties_ConversionField FieldProps => props as CompProperties_ConversionField;
+
     private bool FieldActive => HasFieldSource && parent.GetStatValue(StatDefOf.EnergyShieldEnergyMax) > 0f;
 
     /// <summary>
@@ -65,32 +75,133 @@ public class Comp_ConversionField : CompShield
     public override void PostPreApplyDamage(ref DamageInfo dinfo, out bool absorbed)
     {
         absorbed = false;
-        if (!FieldActive)
+        if (!FieldActive || ShieldState != ShieldState.Active || PawnOwner == null)
         {
             return;
         }
 
-        base.PostPreApplyDamage(ref dinfo, out absorbed);
+        if (dinfo.Def == DamageDefOf.EMP)
+        {
+            energy = 0f;
+            BreakField();
+        }
+        else if (!dinfo.Def.ignoreShields && (dinfo.Def.isRanged || dinfo.Def.isExplosive))
+        {
+            energy -= dinfo.Amount * Props.energyLossPerDamage;
+            if (energy < 0f)
+            {
+                BreakField();
+            }
+            else
+            {
+                FieldAbsorbedDamage(dinfo);
+            }
+            absorbed = true;
+        }
+    }
+
+    /// <summary>
+    /// The wearer's drawn size relative to a baseline pawn, taken from VEF's render cache so body size stats count.
+    /// </summary>
+    public float DrawScale
+    {
+        get
+        {
+            var pawn = PawnOwner;
+            if (pawn == null || FieldProps is { scaleWithVisualSize: false })
+            {
+                return 1f;
+            }
+
+            var cache = pawn.GetCachePrePatched();
+            if (cache == null)
+            {
+                return 1f;
+            }
+
+            var scale = (cache.vCosmeticScale.x + cache.vCosmeticScale.z) / 2f;
+            return scale > 0f ? scale : 1f;
+        }
+    }
+
+    private float CurrentDrawSize => Mathf.Lerp(Props.minDrawSize, Props.maxDrawSize, energy) * DrawScale;
+
+    private void FieldAbsorbedDamage(DamageInfo dinfo)
+    {
+        var pawn = PawnOwner;
+        SoundDefOf.EnergyShield_AbsorbDamage.PlayOneShot(new TargetInfo(pawn.Position, pawn.Map));
+        fieldImpactAngleVect = Vector3Utility.HorizontalVectorFromAngle(dinfo.Angle);
+        var loc = pawn.TrueCenter() + fieldImpactAngleVect.RotatedBy(180f) * 0.5f * DrawScale;
+        var flashSize = Mathf.Min(10f, 2f + dinfo.Amount / 10f);
+        FleckMaker.Static(loc, pawn.Map, FleckDefOf.ExplosionFlash, flashSize);
+        var puffs = (int)flashSize;
+        for (var i = 0; i < puffs; i++)
+        {
+            FleckMaker.ThrowDustPuff(loc, pawn.Map, Rand.Range(0.8f, 1.2f));
+        }
+        fieldLastAbsorbDamageTick = Find.TickManager.TicksGame;
+        KeepDisplaying();
+    }
+
+    private void BreakField()
+    {
+        var pawn = PawnOwner;
+        if (parent.Spawned || (pawn != null && pawn.Spawned))
+        {
+            var scale = CurrentDrawSize;
+            EffecterDefOf.Shield_Break.SpawnAttached(pawn ?? parent, parent.MapHeld, scale);
+            var center = pawn?.TrueCenter() ?? parent.TrueCenter();
+            FleckMaker.Static(center, parent.MapHeld, FleckDefOf.ExplosionFlash, 12f);
+            for (var i = 0; i < 6; i++)
+            {
+                FleckMaker.ThrowDustPuff(center + Vector3Utility.HorizontalVectorFromAngle(Rand.Range(0, 360)) * Rand.Range(0.3f, 0.6f) * DrawScale, parent.MapHeld, Rand.Range(0.8f, 1.2f));
+            }
+        }
+        energy = 0f;
+        ticksToReset = Props.startingTicksToReset;
+    }
+
+    private void DrawField()
+    {
+        if (ShieldState != ShieldState.Active || !ShouldDisplay)
+        {
+            return;
+        }
+
+        var size = CurrentDrawSize;
+        var drawPos = PawnOwner.Drawer.DrawPos;
+        drawPos.y = AltitudeLayer.MoteOverhead.AltitudeFor();
+        var ticksSinceImpact = Find.TickManager.TicksGame - fieldLastAbsorbDamageTick;
+        if (ticksSinceImpact < 8)
+        {
+            var jitter = (8 - ticksSinceImpact) / 8f * 0.05f;
+            drawPos += fieldImpactAngleVect * jitter;
+            size -= jitter;
+        }
+        var angle = Rand.Range(0, 360);
+        var matrix = default(Matrix4x4);
+        matrix.SetTRS(drawPos, Quaternion.AngleAxis(angle, Vector3.up), new Vector3(size, 1f, size));
+        Graphics.DrawMesh(MeshPool.plane10, matrix, FieldBubbleMat, 0);
     }
 
     public override void CompDrawWornExtras()
     {
-        if (!FieldActive)
+        if (!FieldActive || !IsApparel)
         {
             return;
         }
 
-        base.CompDrawWornExtras();
+        DrawField();
     }
 
     public override void PostDraw()
     {
-        if (!FieldActive)
+        if (!FieldActive || IsApparel)
         {
             return;
         }
 
-        base.PostDraw();
+        DrawField();
     }
 
     public override IEnumerable<Gizmo> CompGetWornGizmosExtra()

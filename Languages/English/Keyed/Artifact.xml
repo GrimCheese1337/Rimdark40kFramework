@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <!--=== Artifact weapons ===-->
+  <BEWH.Framework.Artifact.Tab>Artifact</BEWH.Framework.Artifact.Tab>
+  <BEWH.Framework.Artifact.TraitsStat>{0} traits</BEWH.Framework.Artifact.TraitsStat>
+  <BEWH.Framework.Artifact.Traits>Traits</BEWH.Framework.Artifact.Traits>
+  <BEWH.Framework.Artifact.Stage>Stage {0} of {1}</BEWH.Framework.Artifact.Stage>
+  <BEWH.Framework.Artifact.NextStage>Next stage requires:</BEWH.Framework.Artifact.NextStage>
+  <BEWH.Framework.Artifact.WielderUnworthy>The current wielder does not meet this artifact's requirements. Its traits lie dormant.</BEWH.Framework.Artifact.WielderUnworthy>
+  <BEWH.Framework.Artifact.Dormant>(dormant {0})</BEWH.Framework.Artifact.Dormant>
+  <BEWH.Framework.Artifact.DormantShort>(dormant)</BEWH.Framework.Artifact.DormantShort>
+  <BEWH.Framework.Artifact.DrawbackSuffix>(drawback)</BEWH.Framework.Artifact.DrawbackSuffix>
+  <BEWH.Framework.Artifact.Wielder>Wielder</BEWH.Framework.Artifact.Wielder>
+  <BEWH.Framework.Artifact.BurstShots>Burst shots {0}</BEWH.Framework.Artifact.BurstShots>
+  <BEWH.Framework.Artifact.Range>Range {0}</BEWH.Framework.Artifact.Range>
+  <BEWH.Framework.Artifact.Warmup>Warmup {0}s</BEWH.Framework.Artifact.Warmup>
+  <BEWH.Framework.Artifact.ExtraDamage>Extra damage: {0} ({1})</BEWH.Framework.Artifact.ExtraDamage>
+  <BEWH.Framework.Artifact.DamageOverride>Damage type: {0}</BEWH.Framework.Artifact.DamageOverride>
+  <BEWH.Framework.Artifact.KillsHeader>Kills: {0}</BEWH.Framework.Artifact.KillsHeader>
+  <BEWH.Framework.Artifact.Bearers>Bearers</BEWH.Framework.Artifact.Bearers>
+  <BEWH.Framework.Artifact.BearerKills>{0} kills</BEWH.Framework.Artifact.BearerKills>
+  <BEWH.Framework.Artifact.CurrentBearer>(current)</BEWH.Framework.Artifact.CurrentBearer>
+  <BEWH.Framework.Artifact.BoundToArtifact>Bound to the {0}</BEWH.Framework.Artifact.BoundToArtifact>
+
+  <BEWH.Framework.Artifact.Condition.Kills>Kills: {0} / {1}</BEWH.Framework.Artifact.Condition.Kills>
+  <BEWH.Framework.Artifact.Condition.KillsOfCategory>{0} kills: {1} / {2}</BEWH.Framework.Artifact.Condition.KillsOfCategory>
+  <BEWH.Framework.Artifact.Condition.Quality>Quality of at least {0}</BEWH.Framework.Artifact.Condition.Quality>
+  <BEWH.Framework.Artifact.Condition.Wielder>A worthy wielder</BEWH.Framework.Artifact.Condition.Wielder>
+
+  <BEWH.Framework.Artifact.KillCategory.Humanlike>Humanlike</BEWH.Framework.Artifact.KillCategory.Humanlike>
+  <BEWH.Framework.Artifact.KillCategory.Animal>Animal</BEWH.Framework.Artifact.KillCategory.Animal>
+  <BEWH.Framework.Artifact.KillCategory.Mechanoid>Mechanoid</BEWH.Framework.Artifact.KillCategory.Mechanoid>
+  <BEWH.Framework.Artifact.KillCategory.Entity>Entity</BEWH.Framework.Artifact.KillCategory.Entity>
+  <BEWH.Framework.Artifact.KillCategory.Other>Other</BEWH.Framework.Artifact.KillCategory.Other>
+
+  <BEWH.Framework.StatReport.ArtifactTraits>Artifact traits</BEWH.Framework.StatReport.ArtifactTraits>
+
+  <!--=== Locks shown in the customization tabs ===-->
+  <BEWH.Framework.Customization.DecorationLocked>Locked: {0}. It cannot be removed here.</BEWH.Framework.Customization.DecorationLocked>
+  <BEWH.Framework.Customization.ColoursLocked>Colours locked: {0}</BEWH.Framework.Customization.ColoursLocked>
+  <BEWH.Framework.Customization.IncompatibleWithLockedDecoration>Incompatible with a locked decoration ({0})</BEWH.Framework.Customization.IncompatibleWithLockedDecoration>
+
+</LanguageData>

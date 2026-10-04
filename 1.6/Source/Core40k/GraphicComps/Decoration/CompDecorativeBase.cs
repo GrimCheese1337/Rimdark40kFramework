@@ -34,6 +34,184 @@ public class CompDecorativeBase : CompGraphicParent
         }
     }
 
+    //Locks
+    private List<IDecorationLockSource> lockSources;
+
+    private List<IDecorationLockSource> LockSources
+    {
+        get
+        {
+            if (lockSources != null)
+            {
+                return lockSources;
+            }
+
+            lockSources = [];
+            foreach (var comp in parent.AllComps)
+            {
+                if (comp is IDecorationLockSource lockSource)
+                {
+                    lockSources.Add(lockSource);
+                }
+            }
+            return lockSources;
+        }
+    }
+
+    /// <summary>
+    /// Whether a sibling comp pins this decoration in place. Locked decorations are shown but never removed by the
+    /// tabs, presets, requirement checks or Remove all.
+    /// </summary>
+    public bool IsDecorationLocked(DecorationDef decoration, out string reason)
+    {
+        reason = null;
+        if (decoration == null)
+        {
+            return false;
+        }
+
+        var sources = LockSources;
+        for (var i = 0; i < sources.Count; i++)
+        {
+            if (sources[i].LocksDecoration(decoration))
+            {
+                reason = sources[i].LockReason(decoration);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool AreDecorationColoursLocked(DecorationDef decoration)
+    {
+        if (decoration == null)
+        {
+            return false;
+        }
+
+        var sources = LockSources;
+        for (var i = 0; i < sources.Count; i++)
+        {
+            if (sources[i].LocksDecorationColours(decoration))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool AnyDecorationLocked
+    {
+        get
+        {
+            if (LockSources.Count == 0)
+            {
+                return false;
+            }
+            foreach (var decoration in Decorations.Keys)
+            {
+                if (IsDecorationLocked(decoration, out _))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Fits a decoration outside the player's edit flow: it lands in the current, original and any pending set at
+    /// once, so it is never charged, never shows as an edit and survives a queued job. Returns false when the
+    /// decoration cannot apply to this thing.
+    /// </summary>
+    public bool ForceAddDecoration(DecorationDef decoration, Color? colour = null, Color? colourTwo = null, Color? colourThree = null, MaskDef mask = null, bool flipped = false)
+    {
+        if (decoration == null)
+        {
+            return false;
+        }
+
+        if (!DecorationIndex.DecorationsFor(parent.def).Contains(decoration))
+        {
+            Log.ErrorOnce("[RimDark] " + decoration.defName + " cannot be forced onto " + parent.def.defName + ": it does not apply to that thing.", decoration.GetHashCode() ^ parent.def.GetHashCode());
+            return false;
+        }
+
+        if (!decorations.ContainsKey(decoration))
+        {
+            AddDecoration(decoration, setDefaultColors: true, free: true);
+        }
+        Unlock(decoration);
+
+        var settings = decorations[decoration];
+        if (colour.HasValue)
+        {
+            settings.Color = colour.Value;
+        }
+        if (colourTwo.HasValue)
+        {
+            settings.ColorTwo = colourTwo.Value;
+        }
+        if (colourThree.HasValue)
+        {
+            settings.ColorThree = colourThree.Value;
+        }
+        if (mask != null)
+        {
+            settings.maskDef = mask;
+        }
+        settings.Flipped = flipped && decoration.flipable;
+
+        originalDecorations ??= new Dictionary<DecorationDef, DecorationSettings>();
+        originalDecorations[decoration] = new DecorationSettings(settings);
+        if (!originalDrawDatas.ContainsKey(decoration))
+        {
+            SetOriginalDrawData(decoration);
+        }
+
+        if (hasPendingChange && pendingDecorations != null && !pendingDecorations.ContainsKey(decoration))
+        {
+            pendingDecorations.Add(decoration, new DecorationSettings(settings));
+            if (pendingDrawDatas != null && !pendingDrawDatas.ContainsKey(decoration))
+            {
+                pendingDrawDatas.Add(decoration, new DecorationDrawData());
+            }
+        }
+
+        OnDecorationsChanged();
+        Notify_GraphicChanged();
+        return true;
+    }
+
+    /// <summary>
+    /// The reverse of ForceAddDecoration. Does nothing while another lock source still holds the decoration.
+    /// </summary>
+    public bool RemoveForcedDecoration(DecorationDef decoration)
+    {
+        if (decoration == null || IsDecorationLocked(decoration, out _))
+        {
+            return false;
+        }
+
+        var removed = RemoveDecoration(decoration);
+        originalDecorations?.Remove(decoration);
+        originalDrawDatas?.Remove(decoration);
+        if (pendingDecorations != null && pendingDecorations.Remove(decoration))
+        {
+            pendingDrawDatas?.Remove(decoration);
+            pendingAdded?.Remove(decoration);
+            pendingRemoved?.Remove(decoration);
+            pendingUnlock?.Remove(decoration);
+        }
+
+        if (removed)
+        {
+            OnDecorationsChanged();
+            Notify_GraphicChanged();
+        }
+        return removed;
+    }
+
     public int TotalInternalSlots
     {
         get
@@ -80,6 +258,11 @@ public class CompDecorativeBase : CompGraphicParent
     }
     public virtual void AddOrRemoveDecoration(DecorationDef decoration, bool free = false)
     {
+        if (IsDecorationLocked(decoration, out _))
+        {
+            return;
+        }
+
         if (decorations.TryGetValue(decoration, out var setting))
         {
             if (decoration.flipable && !setting.Flipped)
@@ -140,7 +323,7 @@ public class CompDecorativeBase : CompGraphicParent
     {
         foreach (var decoration in decorations.Keys.ToList())
         {
-            if (decoration == null || !decoration.showInDecorationTab)
+            if (decoration == null || !decoration.showInDecorationTab || IsDecorationLocked(decoration, out _))
             {
                 continue;
             }
@@ -154,7 +337,7 @@ public class CompDecorativeBase : CompGraphicParent
 
     public virtual void RemoveAllDecorations(bool upgrades)
     {
-        var toRemove = decorations.Keys.Where(def => def != null && def.showInDecorationTab && def.IsUpgrade == upgrades).ToList();
+        var toRemove = decorations.Keys.Where(def => def != null && def.showInDecorationTab && def.IsUpgrade == upgrades && !IsDecorationLocked(def, out _)).ToList();
         foreach (var decoration in toRemove)
         {
             RemoveDecoration(decoration);
@@ -166,6 +349,10 @@ public class CompDecorativeBase : CompGraphicParent
         List<DecorationDef> toRemove = null;
         foreach (var def in decorations.Keys)
         {
+            if (def != null && IsDecorationLocked(def, out _))
+            {
+                continue;
+            }
             if (def == null || !def.MeetsRequirements(pawn))
             {
                 toRemove ??= [];
@@ -178,8 +365,9 @@ public class CompDecorativeBase : CompGraphicParent
     {
         var toRemove = decorations.Keys.Where(def =>
             def == null ||
-            (alternateBaseFormDef == null && def.isIncompatibleWithBaseTexture) ||
-            (alternateBaseFormDef != null && alternateBaseFormDef.incompatibleDecorations.Contains(def))).ToList();
+            (!IsDecorationLocked(def, out _) &&
+             ((alternateBaseFormDef == null && def.isIncompatibleWithBaseTexture) ||
+              (alternateBaseFormDef != null && alternateBaseFormDef.incompatibleDecorations.Contains(def))))).ToList();
         RemoveEach(toRemove);
     }
 
@@ -1117,4 +1305,4 @@ public class CompDecorativeBase : CompGraphicParent
 
         TryAddCachedStat(Pawn);
     }
-}
+}

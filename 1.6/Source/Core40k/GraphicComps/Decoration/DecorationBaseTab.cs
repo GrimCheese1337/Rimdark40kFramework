@@ -576,6 +576,8 @@ public class DecorationBaseTab : CustomizerTabDrawer
 
             var hasReq = HasRequirementsCached(decoDef, out var reason);
             var incompatibleDeco = DecoIsIncompatible(decoDef, decorativeComp, out var incompatibleReason);
+            string lockReason = null;
+            var locked = hasDeco && decorativeComp.IsDecorationLocked(decoDef, out lockReason);
 
             var unlocked = !DecorationWorkUtility.CostEnabled || decorativeComp.IsUnlocked(decoDef);
             var affordable = unlocked || hasDeco || CanAfford(decoDef);
@@ -595,6 +597,10 @@ public class DecorationBaseTab : CustomizerTabDrawer
             {
                 color = Color.gray;
             }
+            if (locked)
+            {
+                color = Mouse.IsOver(iconRect) ? GenUI.MouseoverColor : Color.white;
+            }
             
             GUI.color = color;
             GUI.DrawTexture(iconRect, Command.BGTexShrunk);
@@ -603,7 +609,7 @@ public class DecorationBaseTab : CustomizerTabDrawer
             if (Mouse.IsOver(iconRect))
             {
                 //The tooltip text is only assembled for the icon under the cursor.
-                TooltipHandler.TipRegion(iconRect, () => IconTooltip(decoDef, unlocked, affordable, hasReq, reason, incompatibleReason, noRoom, usedInternalSlots, totalInternalSlots), decoDef.GetHashCode());
+                TooltipHandler.TipRegion(iconRect, () => IconTooltip(decoDef, unlocked, affordable, hasReq, reason, incompatibleReason, noRoom, usedInternalSlots, totalInternalSlots, locked ? lockReason : null), decoDef.GetHashCode());
             }
             
             if (hasDeco)    
@@ -613,11 +619,16 @@ public class DecorationBaseTab : CustomizerTabDrawer
                     var flippedIconRect = new Rect(new Vector2(position.x + 7f, position.y + 5f), SmallIconSize);
                     GUI.DrawTexture(flippedIconRect, Core40kUtils.FlippedIconTex);
                 }
+                if (locked)
+                {
+                    var lockIconRect = new Rect(new Vector2(iconRect.xMax - SmallIconSize.x - 2f, position.y + 5f), SmallIconSize);
+                    GUI.DrawTexture(lockIconRect, Core40kUtils.LockedIconTex);
+                }
             }
             
-            if(hasReq && !incompatibleDeco && affordable && !noRoom)
+            if(locked || (hasReq && !incompatibleDeco && affordable && !noRoom))
             {
-                if (Widgets.ButtonInvisible(iconRect))
+                if (!locked && Widgets.ButtonInvisible(iconRect))
                 {
                     decorativeComp.AddOrRemoveDecoration(decoDef);
                     ClearRequirementCaches();
@@ -628,7 +639,7 @@ public class DecorationBaseTab : CustomizerTabDrawer
                     bottomRect.height /= 3;
                     
                     //Color Selection
-                    if (decoDef.colourable)
+                    if (decoDef.colourable && !(locked && decorativeComp.AreDecorationColoursLocked(decoDef)))
                     {
                         DrawColorBoxes(ref bottomRect, decoDef, decorativeComp);
                         
@@ -711,9 +722,14 @@ public class DecorationBaseTab : CustomizerTabDrawer
         alternateTextureComps.Clear();
     }
 
-    private string IconTooltip(DecorationDef decoDef, bool unlocked, bool affordable, bool hasReq, string reason, string incompatibleReason, bool noRoom, int usedInternalSlots, int totalInternalSlots)
+    private string IconTooltip(DecorationDef decoDef, bool unlocked, bool affordable, bool hasReq, string reason, string incompatibleReason, bool noRoom, int usedInternalSlots, int totalInternalSlots, string lockReason = null)
     {
         var tipTooltip = TooltipCached(decoDef);
+        if (lockReason != null)
+        {
+            tipTooltip += "\n" + "BEWH.Framework.Customization.DecorationLocked".Translate(lockReason);
+            return tipTooltip;
+        }
         if (!unlocked)
         {
             tipTooltip += "\n" + (affordable
@@ -1085,4 +1101,4 @@ public class DecorationBaseTab : CustomizerTabDrawer
             decorativeComp.Reset();
         }
     }
-}
+}

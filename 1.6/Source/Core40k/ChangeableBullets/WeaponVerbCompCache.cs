@@ -13,14 +13,16 @@ public static class WeaponVerbCompCache
     {
         public Comp_AmmoChanger ammoChanger;
         public CompWeaponDecoration weaponDecoration;
+        public CompArtifactWeapon artifact;
     }
 
     private static readonly ConditionalWeakTable<ThingWithComps, Entry> entries = new();
 
-    public static bool TryGet(ThingWithComps equipment, out Comp_AmmoChanger ammoChanger, out CompWeaponDecoration weaponDecoration)
+    public static bool TryGet(ThingWithComps equipment, out Comp_AmmoChanger ammoChanger, out CompWeaponDecoration weaponDecoration, out CompArtifactWeapon artifact)
     {
         ammoChanger = null;
         weaponDecoration = null;
+        artifact = null;
         if (!Core40kUtils.CanModifyVerbs(equipment))
         {
             return false;
@@ -30,10 +32,12 @@ public static class WeaponVerbCompCache
         {
             ammoChanger = weapon.GetComp<Comp_AmmoChanger>(),
             weaponDecoration = weapon.GetComp<CompWeaponDecoration>(),
+            artifact = weapon.GetComp<CompArtifactWeapon>(),
         });
 
         ammoChanger = entry.ammoChanger;
         weaponDecoration = entry.weaponDecoration;
-        return ammoChanger != null || weaponDecoration != null;
+        artifact = entry.artifact;
+        return ammoChanger != null || weaponDecoration != null || artifact != null;
     }
 }

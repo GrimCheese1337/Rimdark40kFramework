@@ -119,7 +119,20 @@ public class ColoringBaseTab : CustomizerTabDrawer
             Text.Anchor = TextAnchor.MiddleCenter;
             Widgets.Label(nameRect, item.LabelCap);
             Text.Anchor = TextAnchor.UpperLeft;
-                
+
+            if (multiColor.ColoursLocked(out var colourLockReason))
+            {
+                curY += nameRect.height + 3f;
+                var lockedRect = new Rect(rect.x, curY, viewRect.width - 16f, 30f);
+                Text.Anchor = TextAnchor.MiddleCenter;
+                GUI.color = Core40kUtils.LockedColour;
+                Widgets.Label(lockedRect, "BEWH.Framework.Customization.ColoursLocked".Translate(colourLockReason));
+                GUI.color = Color.white;
+                Text.Anchor = TextAnchor.UpperLeft;
+                curY += lockedRect.height + 22f;
+                continue;
+            }
+
             //Select button
             var selectPresetRect = new Rect(rect.x, curY, viewRect.width - 16f, 30f);
             selectPresetRect.width /= 5;
@@ -467,4 +480,4 @@ public class ColoringBaseTab : CustomizerTabDrawer
             multiColor.Reset();
         }
     }
-}
+}

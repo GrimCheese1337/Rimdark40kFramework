@@ -44,6 +44,10 @@ public static class RelevantGearUtility
             {
                 return true;
             }
+            if (comp is CompArtifactWeapon artifact && !Mathf.Approximately(artifact.GetWielderStatOffset(stat), 0f))
+            {
+                return true;
+            }
         }
 
         return false;
@@ -73,17 +77,21 @@ public static class RelevantGearPatch
             yield return gear;
         }
 
-        if (pawn?.apparel == null)
+        if (pawn?.apparel != null)
         {
-            yield break;
+            foreach (var apparel in pawn.apparel.WornApparel)
+            {
+                if (!alreadyListed.Contains(apparel) && RelevantGearUtility.GearAffectsStatIncludingComps(apparel, stat))
+                {
+                    yield return apparel;
+                }
+            }
         }
 
-        foreach (var apparel in pawn.apparel.WornApparel)
+        var primary = pawn?.equipment?.Primary;
+        if (primary != null && !alreadyListed.Contains(primary) && RelevantGearUtility.GearAffectsStatIncludingComps(primary, stat))
         {
-            if (!alreadyListed.Contains(apparel) && RelevantGearUtility.GearAffectsStatIncludingComps(apparel, stat))
-            {
-                yield return apparel;
-            }
+            yield return primary;
         }
     }
 }

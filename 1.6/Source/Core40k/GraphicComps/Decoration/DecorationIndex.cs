@@ -111,6 +111,12 @@ public static class DecorationIndex
             AddStats(decoration.pawnStatOffsets);
             AddStats(decoration.pawnStatFactors);
         }
+
+        //Artifact trait wielder factors ride the same cached route; offsets go through StatOffsetFromGear.
+        foreach (var trait in DefDatabase<ArtifactTraitDef>.AllDefsListForReading)
+        {
+            AddStats(trait.wielderStatFactors);
+        }
     }
 
     private static void AddStats(List<StatModifier> modifiers)

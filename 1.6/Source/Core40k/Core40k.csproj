@@ -65,6 +65,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Artifact\ArtifactBearerRecord.cs" />
+    <Compile Include="Artifact\ArtifactCondition.cs" />
+    <Compile Include="Artifact\ArtifactKillRecord.cs" />
+    <Compile Include="Artifact\ArtifactKindDef.cs" />
+    <Compile Include="Artifact\ArtifactKindWorker.cs" />
+    <Compile Include="Artifact\ArtifactStage.cs" />
+    <Compile Include="Artifact\ArtifactTraitDef.cs" />
+    <Compile Include="Artifact\ArtifactTraitWorker.cs" />
+    <Compile Include="Artifact\ArtifactWeaponUtility.cs" />
+    <Compile Include="Artifact\CompArtifactWeapon.cs" />
+    <Compile Include="Artifact\CompProperties_ArtifactWeapon.cs" />
+    <Compile Include="Artifact\DevotionOnKill.cs" />
+    <Compile Include="Artifact\ForcedDecoration.cs" />
+    <Compile Include="Artifact\HarmonyPatch_ArtifactProjectileLaunch.cs" />
+    <Compile Include="Artifact\ITab_Artifact.cs" />
+    <Compile Include="Artifact\RequirementData.cs" />
+    <Compile Include="Core40kEvents.cs" />
+    <Compile Include="GraphicComps\IPawnStatSource.cs" />
+    <Compile Include="GraphicComps\Decoration\IDecorationLockSource.cs" />
+    <Compile Include="HarmonyPatches\HarmonyPatch_PawnKilledEvent.cs" />
     <Compile Include="Abilities\Ability_MapWideHediff.cs" />
     <Compile Include="Abilities\Ability_ShootProjectileWithCharges.cs" />
     <Compile Include="Abilities\Command_AbilityWithCharges.cs" />
@@ -356,6 +376,8 @@
     <Compile Include="Quest\StorytellerComp_PersistentQuest.cs" />
     <Compile Include="Quest\GameComponent_PersistentQuests.cs" />
     <Compile Include="Quest\DebugActions_PersistentQuest.cs" />
+    <Compile Include="Quest\PersistentQuestDef.cs" />
+    <Compile Include="Quest\PersistentQuestInjector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\packages.config" />
@@ -374,4 +396,4 @@
     <Error Condition="!Exists('packages\Krafs.Publicizer.2.3.0\build\Krafs.Publicizer.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Krafs.Publicizer.2.3.0\build\Krafs.Publicizer.targets'))" />
   </Target>
   <Import Project="packages\Krafs.Publicizer.2.3.0\build\Krafs.Publicizer.targets" Condition="Exists('packages\Krafs.Publicizer.2.3.0\build\Krafs.Publicizer.targets')" />
-</Project>
+</Project>

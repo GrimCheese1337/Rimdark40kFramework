@@ -73,17 +73,21 @@ public static class GetValueUnfinalizedFromVariousFactorPatch
         var apparelComps = cached.apparelComps;
         for (var i = 0; i < apparelComps.Count; i++)
         {
-            if (apparelComps[i] is CompGraphicParent graphicParent)
+            if (apparelComps[i] is IPawnStatSource source)
             {
-                offset += graphicParent.GetPawnStatOffset(stat);
-                factor *= graphicParent.GetPawnStatFactor(stat);
+                offset += source.GetPawnStatOffset(stat);
+                factor *= source.GetPawnStatFactor(stat);
             }
         }
 
-        if (cached.weaponComp is CompGraphicParent weaponGraphicParent)
+        var weaponComps = cached.weaponComps;
+        for (var i = 0; i < weaponComps.Count; i++)
         {
-            offset += weaponGraphicParent.GetPawnStatOffset(stat);
-            factor *= weaponGraphicParent.GetPawnStatFactor(stat);
+            if (weaponComps[i] is IPawnStatSource source)
+            {
+                offset += source.GetPawnStatOffset(stat);
+                factor *= source.GetPawnStatFactor(stat);
+            }
         }
     }
 
@@ -140,15 +144,19 @@ public static class GetValueUnfinalizedFromVariousFactorPatch
         var apparelComps = cached.apparelComps;
         for (var i = 0; i < apparelComps.Count; i++)
         {
-            if (apparelComps[i] is CompGraphicParent graphicParent)
+            if (apparelComps[i] is IPawnStatSource source)
             {
-                num += graphicParent.GetPawnStatOffset(stat);
+                num += source.GetPawnStatOffset(stat);
             }
         }
 
-        if (cached.weaponComp is CompGraphicParent weaponGraphicParent)
+        var weaponComps = cached.weaponComps;
+        for (var i = 0; i < weaponComps.Count; i++)
         {
-            num += weaponGraphicParent.GetPawnStatOffset(stat);
+            if (weaponComps[i] is IPawnStatSource source)
+            {
+                num += source.GetPawnStatOffset(stat);
+            }
         }
 
         return num;
@@ -161,15 +169,19 @@ public static class GetValueUnfinalizedFromVariousFactorPatch
         var apparelComps = cached.apparelComps;
         for (var i = 0; i < apparelComps.Count; i++)
         {
-            if (apparelComps[i] is CompGraphicParent graphicParent)
+            if (apparelComps[i] is IPawnStatSource source)
             {
-                num *= graphicParent.GetPawnStatFactor(stat);
+                num *= source.GetPawnStatFactor(stat);
             }
         }
 
-        if (cached.weaponComp is CompGraphicParent weaponGraphicParent)
+        var weaponComps = cached.weaponComps;
+        for (var i = 0; i < weaponComps.Count; i++)
         {
-            num *= weaponGraphicParent.GetPawnStatFactor(stat);
+            if (weaponComps[i] is IPawnStatSource source)
+            {
+                num *= source.GetPawnStatFactor(stat);
+            }
         }
 
         return num;

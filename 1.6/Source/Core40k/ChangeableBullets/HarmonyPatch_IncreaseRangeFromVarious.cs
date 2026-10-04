@@ -13,7 +13,7 @@ public static class IncreaseRangeFromVarious
             return;
         }
 
-        if (!WeaponVerbCompCache.TryGet(__instance.EquipmentSource, out var ammoChangerComp, out var weaponDecoComp))
+        if (!WeaponVerbCompCache.TryGet(__instance.EquipmentSource, out var ammoChangerComp, out var weaponDecoComp, out var artifactComp))
         {
             return;
         }
@@ -25,6 +25,10 @@ public static class IncreaseRangeFromVarious
         if (weaponDecoComp != null)
         {
             __result += weaponDecoComp.AdditionalRange;
+        }
+        if (artifactComp != null)
+        {
+            __result += artifactComp.AdditionalRange;
         }
     }
 }

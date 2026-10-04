@@ -21,12 +21,14 @@ public class GameComponent_CoreUtils : GameComponent
 
     public GameComponent_CoreUtils(Game game)
     {
+        ArtifactWeaponUtility.ClearTicking();
     }
 
     public override void GameComponentTick()
     {
         base.GameComponentTick();
         GeneVariantAvailabilityNotifier.Tick();
+        ArtifactWeaponUtility.Tick();
     }
 
     public override void LoadedGame()
@@ -116,22 +118,16 @@ public class GameComponent_CoreUtils : GameComponent
     public class CachedDecoratives
     {
         public List<ThingComp> apparelComps = [];
-        public ThingComp weaponComp;
+        public List<ThingComp> weaponComps = [];
 
-        public bool IsEmpty => apparelComps.Count == 0 && weaponComp == null;
+        public bool IsEmpty => apparelComps.Count == 0 && weaponComps.Count == 0;
 
         public void Add(ThingComp comp)
         {
-            if (comp.parent is Apparel)
+            var list = comp.parent is Apparel ? apparelComps : weaponComps;
+            if (!list.Contains(comp))
             {
-                if (!apparelComps.Contains(comp))
-                {
-                    apparelComps.Add(comp);
-                }
-            }
-            else
-            {
-                weaponComp = comp;
+                list.Add(comp);
             }
         }
 
@@ -141,9 +137,9 @@ public class GameComponent_CoreUtils : GameComponent
             {
                 apparelComps.Remove(comp);
             }
-            else if (weaponComp == comp)
+            else
             {
-                weaponComp = null;
+                weaponComps.Remove(comp);
             }
         }
     }

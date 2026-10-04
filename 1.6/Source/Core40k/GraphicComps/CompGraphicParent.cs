@@ -5,7 +5,7 @@ using Verse;
 
 namespace Core40k;
 
-public class CompGraphicParent : ThingComp
+public class CompGraphicParent : ThingComp, IPawnStatSource
 {
     private static Game cachedGameForCoreUtils;
     private static GameComponent_CoreUtils coreUtils;
@@ -228,4 +228,4 @@ public class CompGraphicParent : ThingComp
         Scribe_Values.Look(ref initialSet, "initialColourSet");
         base.PostExposeData();
     }
-}
+}

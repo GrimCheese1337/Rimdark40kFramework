@@ -23,6 +23,12 @@ public static class WeaponDecorationToolsAndVerbs
             __result = tools;
         }
 
+        var artifact = weapon.GetComp<CompArtifactWeapon>();
+        if (artifact != null)
+        {
+            __result = artifact.ApplyExtraDamage(__result);
+        }
+
         var forceWeapon = weapon.GetComp<Comp_ForceWeapon>();
         if (forceWeapon != null)
         {

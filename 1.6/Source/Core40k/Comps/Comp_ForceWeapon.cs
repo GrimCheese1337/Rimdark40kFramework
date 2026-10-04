@@ -98,7 +98,7 @@ public class Comp_ForceWeapon : ThingComp
 
             var copy = WeaponDecorationVerbUtility.CopyTool(tool);
             copy.extraMeleeDamages ??= [];
-            copy.extraMeleeDamages.RemoveWhere(damage => damage is NamedExtraDamage);
+            copy.extraMeleeDamages.RemoveWhere(damage => damage is NamedExtraDamage { name: ExtraDamageName });
             copy.extraMeleeDamages.Add(new NamedExtraDamage
             {
                 def = Props.damageDef,

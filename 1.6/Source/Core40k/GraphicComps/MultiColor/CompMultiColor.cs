@@ -173,6 +173,23 @@ public class CompMultiColor : CompGraphicParent
         drawColorThree = Props.defaultTertiaryColor ?? Color.white;
     }
     
+    /// <summary>
+    /// Whether a sibling comp pins the colours. The coloring tab shows them read-only; content code may still recolour.
+    /// </summary>
+    public bool ColoursLocked(out string reason)
+    {
+        reason = null;
+        foreach (var comp in parent.AllComps)
+        {
+            if (comp is IDecorationLockSource { LocksColours: true } lockSource)
+            {
+                reason = lockSource.ColourLockReason;
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void SetColors(Color colorOne, Color colorTwo, Color? colorThree)
     {
         drawColorOne = colorOne;
@@ -312,4 +329,4 @@ public class CompMultiColor : CompGraphicParent
             Notify_GraphicChanged();
         }
     }
-}
+}

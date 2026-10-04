@@ -46,6 +46,8 @@ public static class Core40kDefOf
 
     public static ThoughtDef BEWH_DevotionOpinion;
 
+    public static RulePackDef BEWH_NamerArtifactWeapon;
+
     static Core40kDefOf()
     {
         DefOfHelper.EnsureInitializedInCtor(typeof(Core40kDefOf));
