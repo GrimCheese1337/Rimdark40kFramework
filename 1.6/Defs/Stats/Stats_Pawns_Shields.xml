@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <StatDef>
+    <defName>BEWH_ShieldProficiency</defName>
+    <label>shield proficiency</label>
+    <description>How well this person handles a shield.\n\nMultiplies the chance a worn shield stops an incoming attack. It has no effect without a shield.\n\nImproves with melee skill, and suffers from poor manipulation or sight.</description>
+    <category>BEWH_Shields</category>
+    <workerClass>Core40k.StatWorker_Shields</workerClass>
+    <toStringStyle>PercentZero</toStringStyle>
+    <defaultBaseValue>1</defaultBaseValue>
+    <minValue>0</minValue>
+    <maxValue>3</maxValue>
+    <showOnAnimals>false</showOnAnimals>
+    <showOnDrones>false</showOnDrones>
+    <supressDisabledError>true</supressDisabledError>
+    <displayPriorityInCategory>100</displayPriorityInCategory>
+    <skillNeedFactors>
+      <li Class="SkillNeed_BaseBonus">
+        <skill>Melee</skill>
+        <required>false</required>
+        <baseValue>0.70</baseValue>
+        <bonusPerLevel>0.03</bonusPerLevel>
+      </li>
+    </skillNeedFactors>
+    <noSkillFactor>1</noSkillFactor>
+    <capacityFactors>
+      <li>
+        <capacity>Manipulation</capacity>
+        <weight>0.8</weight>
+        <max>1.2</max>
+      </li>
+      <li>
+        <capacity>Sight</capacity>
+        <weight>0.5</weight>
+        <max>1</max>
+        <allowedDefect>0.1</allowedDefect>
+      </li>
+    </capacityFactors>
+    <parts>
+      <li Class="Core40k.StatPart_ShieldProficiency" />
+    </parts>
+  </StatDef>
+
+</Defs>

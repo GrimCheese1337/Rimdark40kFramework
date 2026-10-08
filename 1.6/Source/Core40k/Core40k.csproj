@@ -378,6 +378,19 @@
     <Compile Include="Quest\DebugActions_PersistentQuest.cs" />
     <Compile Include="Quest\PersistentQuestDef.cs" />
     <Compile Include="Quest\PersistentQuestInjector.cs" />
+    <Compile Include="SetBonus\ApparelSetDef.cs" />
+    <Compile Include="SetBonus\ApparelSetIndex.cs" />
+    <Compile Include="SetBonus\ApparelSetState.cs" />
+    <Compile Include="SetBonus\HarmonyPatch_ApparelSets.cs" />
+    <Compile Include="SetBonus\SetBonusTier.cs" />
+    <Compile Include="Shields\ShieldZone.cs" />
+    <Compile Include="Shields\CompProperties_PhysicalShield.cs" />
+    <Compile Include="Shields\Comp_PhysicalShield.cs" />
+    <Compile Include="Shields\ShieldUtils.cs" />
+    <Compile Include="Shields\StatPart_ShieldProficiency.cs" />
+    <Compile Include="Shields\StatWorker_Shields.cs" />
+    <Compile Include="Shields\PawnRenderNodeWorker_Shield.cs" />
+    <Compile Include="Shields\HarmonyPatch_ShieldPreApplyDamage.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\packages.config" />

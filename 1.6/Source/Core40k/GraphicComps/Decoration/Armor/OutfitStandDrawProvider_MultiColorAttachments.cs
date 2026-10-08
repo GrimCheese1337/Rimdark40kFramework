@@ -3,7 +3,7 @@ using Verse;
 namespace Core40k;
 
 /// <summary>
-/// Draws the framework's own attachment render nodes - backpacks and shoulder pads - on an outfit
+/// Draws the framework's own attachment render nodes - backpacks, shoulder pads and shields - on an outfit
 /// stand, in the armour's colours. Texture flags are deliberately not applied: every flag is
 /// conditioned on a wearer or on a per-pawn gizmo toggle, so the base path is the unworn look.
 /// </summary>
@@ -32,7 +32,8 @@ public class OutfitStandDrawProvider_MultiColorAttachments : OutfitStandDrawProv
         foreach (var props in nodeProperties)
         {
             var shoulderPad = typeof(PawnRenderNodeWorker_AttachmentShoulderPad).IsAssignableFrom(props.workerClass);
-            if (!shoulderPad && !typeof(PawnRenderNodeWorker_AttachmentBackpack).IsAssignableFrom(props.workerClass))
+            if (!shoulderPad && !typeof(PawnRenderNodeWorker_AttachmentBackpack).IsAssignableFrom(props.workerClass)
+                && !typeof(PawnRenderNodeWorker_Shield).IsAssignableFrom(props.workerClass))
             {
                 continue;
             }

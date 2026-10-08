@@ -62,6 +62,21 @@ public class PopulateMutableStatsWithRankStatsPatch
             }
         }
 
+        foreach (var setDef in DefDatabase<ApparelSetDef>.AllDefsListForReading)
+        {
+            foreach (var tier in setDef.tiers)
+            {
+                if (tier.statFactors != null)
+                {
+                    ___mutableStats.AddRange(tier.statFactors.Select(mod => mod.stat));
+                }
+                if (tier.statOffsets != null)
+                {
+                    ___mutableStats.AddRange(tier.statOffsets.Select(mod => mod.stat));
+                }
+            }
+        }
+
         foreach (var thingDef in DefDatabase<ThingDef>.AllDefsListForReading)
         {
             var ammoChangerExtension = thingDef.GetModExtension<DefModExtension_AmmoChanger>();

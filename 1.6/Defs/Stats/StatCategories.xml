@@ -46,4 +46,11 @@
     <displayAllByDefault>true</displayAllByDefault>
   </StatCategoryDef>
 
+  <StatCategoryDef>
+    <defName>BEWH_Shields</defName>
+    <label>Shield</label>
+    <displayOrder>83</displayOrder>
+    <displayAllByDefault>true</displayAllByDefault>
+  </StatCategoryDef>
+
 </Defs>

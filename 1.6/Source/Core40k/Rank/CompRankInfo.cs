@@ -142,6 +142,73 @@ public class CompRankInfo : ThingComp
 
     public Pawn ParentPawn => parent as Pawn;
 
+    private ApparelSetState apparelSets;
+
+    private bool apparelSetsChecked;
+
+    public ApparelSetState ApparelSets => apparelSets ??= new ApparelSetState(this);
+
+    public ApparelSetState ApparelSetsIfAny
+    {
+        get
+        {
+            if (apparelSets != null || apparelSetsChecked)
+            {
+                return apparelSets;
+            }
+
+            apparelSetsChecked = true;
+            if (ApparelSetIndex.AnySets && WearsApparelSetPiece())
+            {
+                apparelSets = new ApparelSetState(this);
+            }
+
+            return apparelSets;
+        }
+    }
+
+    private bool WearsApparelSetPiece()
+    {
+        var worn = ParentPawn?.apparel?.WornApparel;
+        if (worn == null)
+        {
+            return false;
+        }
+
+        foreach (var apparel in worn)
+        {
+            if (ApparelSetIndex.IsPiece(apparel?.def))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void Notify_ApparelChanged()
+    {
+        if (!ApparelSetIndex.AnySets)
+        {
+            return;
+        }
+
+        apparelSetsChecked = true;
+        ApparelSets.Notify_GearChanged(true);
+    }
+
+    public override void PostSpawnSetup(bool respawningAfterLoad)
+    {
+        base.PostSpawnSetup(respawningAfterLoad);
+        if (!ApparelSetIndex.AnySets)
+        {
+            return;
+        }
+
+        apparelSetsChecked = true;
+        ApparelSets.Notify_GearChanged(false);
+    }
+
     private Dictionary<StatDef, float> cachedStatOffset = new Dictionary<StatDef, float>();
     public Dictionary<StatDef, float> CachedStatOffset => cachedStatOffset;
     
@@ -464,6 +531,12 @@ public class CompRankInfo : ThingComp
             CachedStatOffset.Add(stat, num);
         }
 
+        var sets = ApparelSetsIfAny;
+        if (sets != null)
+        {
+            num += sets.GetStatOffset(stat);
+        }
+
         return num;
     }
     
@@ -493,13 +566,20 @@ public class CompRankInfo : ThingComp
 
             CachedStatFactor.Add(stat, num);
         }
-        
+
+        var sets = ApparelSetsIfAny;
+        if (sets != null)
+        {
+            num *= sets.GetStatFactor(stat);
+        }
+
         return num;
     }
     
     public override void GetStatsExplanation(StatDef stat, StringBuilder sb, string whitespace = "")
     {
-        if (UnlockedRanks.NullOrEmpty() && !HasAnyDevotion)
+        var sets = ApparelSetsIfAny;
+        if (UnlockedRanks.NullOrEmpty() && !HasAnyDevotion && sets is not { AnyActive: true })
         {
             base.GetStatsExplanation(stat, sb, whitespace);
             return;
@@ -527,6 +607,8 @@ public class CompRankInfo : ThingComp
         }
 
         devotion?.AppendStatsExplanation(stat, sb, whitespace);
+
+        sets?.AppendStatsExplanation(stat, sb, whitespace);
     }
 
 }

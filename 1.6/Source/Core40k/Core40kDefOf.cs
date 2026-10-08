@@ -34,8 +34,12 @@ public static class Core40kDefOf
     public static GeneSlotCategoryDef BEWH_GeneSlot_Undefined;
 
     public static StatDef BEWH_InternalUpgradeSlots;
+
+    public static StatDef BEWH_ShieldProficiency;
+    public static ApparelLayerDef BEWH_Shield;
     
     public static StatCategoryDef BEWH_Voidfaring;
+    public static StatCategoryDef BEWH_Shields;
     public static StatCategoryDef BEWH_Customization;
     public static StatCategoryDef BEWH_DecorationOffsets;
     public static StatCategoryDef BEWH_DecorationFactors;
