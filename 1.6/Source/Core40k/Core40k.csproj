@@ -175,6 +175,7 @@
     <Compile Include="DefModExtensions\DefModExtension_ExclusiveApparel.cs" />
     <Compile Include="DefModExtensions\DefModExtension_GeneDisabledBy.cs" />
     <Compile Include="DefModExtensions\DefModExtension_GeneExtension.cs" />
+    <Compile Include="DefModExtensions\DefModExtension_HybridWeapon.cs" />
     <Compile Include="DefModExtensions\DefModExtension_DontPlaceProduct.cs" />
     <Compile Include="DefModExtensions\DefModExtension_HolyDamageExtension.cs" />
     <Compile Include="DefModExtensions\DefModExtension_IgnoreMovespeedDecrease.cs" />
@@ -303,6 +304,7 @@
     <Compile Include="HarmonyPatches\HarmonyPatch_CriticalHitPatch.cs" />
     <Compile Include="HarmonyPatches\HarmonyPatch_DontPlaceProductPatch.cs" />
     <Compile Include="HarmonyPatches\HarmonyPatch_ExclusiveApparelCanEquipPatch.cs" />
+    <Compile Include="HarmonyPatches\HarmonyPatch_HybridWeaponMeleePatch.cs" />
     <Compile Include="HarmonyPatches\HarmonyPatch_IgnoreMovespeedDecrease.cs" />
     <Compile Include="HarmonyPatches\HarmonyPatch_InitialGoodwillPatch.cs" />
     <Compile Include="HarmonyPatches\HarmonyPatch_LockedByResearch.cs" />
