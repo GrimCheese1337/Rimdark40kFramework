@@ -103,6 +103,24 @@ public class ColoringBaseTab : CustomizerTabDrawer
 
     public override IEnumerable<CompGraphicParent> Comps => multiColorComps;
 
+    private bool IsColourable(CompMultiColor multiColor)
+    {
+        return multiColor.TextureColourable(AlternateTextureOf(multiColor)?.CurrentAlternateBaseForm);
+    }
+
+    public override bool IsVisible(Pawn pawn)
+    {
+        foreach (var multiColor in multiColorComps)
+        {
+            if (IsColourable(multiColor))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public override void DrawTab(Rect rect, Pawn pawn, ref Vector2 scrollPosition)
     {
         var viewRect = new Rect(rect.x, rect.y, rect.width - 16f, viewRectHeight);
@@ -110,6 +128,11 @@ public class ColoringBaseTab : CustomizerTabDrawer
         var curY = rect.y;
         foreach (var multiColor in multiColorComps)
         {
+            if (!IsColourable(multiColor))
+            {
+                continue;
+            }
+
             var item = multiColor.parent;
             //Item name
             var nameRect = new Rect(rect.x, curY, viewRect.width, 30f);

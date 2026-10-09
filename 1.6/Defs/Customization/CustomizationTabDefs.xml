@@ -13,7 +13,7 @@
         <label>Armor Coloring</label>
         <description>Armor coloring.</description>
         <tabDrawerClass>Core40k.ArmorColoringTab</tabDrawerClass>
-        <workerClass>Core40k.CustomizationTabWorker_Comp</workerClass>
+        <workerClass>Core40k.CustomizationTabWorker_Coloring</workerClass>
         <requiredComps>
             <li>Core40k.CompMultiColor</li>
         </requiredComps>
@@ -66,7 +66,7 @@
         <label>Weapon Coloring</label>
         <description>Weapon coloring.</description>
         <tabDrawerClass>Core40k.WeaponColoringTab</tabDrawerClass>
-        <workerClass>Core40k.CustomizationTabWorker_Comp</workerClass>
+        <workerClass>Core40k.CustomizationTabWorker_Coloring</workerClass>
         <requiredComps>
             <li>Core40k.CompMultiColor</li>
         </requiredComps>

@@ -25,8 +25,7 @@ public class Dialog_CustomizeWeapon : Window, ICustomizationDialog
     
     private Dictionary<CustomizationTabDef, CustomizerTabDrawer>  tabDrawers = [];
     private Dictionary<CustomizationTabDef, TabRecord>  tabRecords = [];
-    private List<TabRecord> cachedTabRecordsToRead;
-    private List<TabRecord> tabRecordsToRead => cachedTabRecordsToRead ??= tabRecords.Values.ToList();
+    private readonly List<TabRecord> visibleTabRecords = [];
 
     private CustomizationTabDef curTab;
 
@@ -78,6 +77,8 @@ public class Dialog_CustomizeWeapon : Window, ICustomizationDialog
             return;
         }
 
+        RefreshVisibleTabs();
+
         Text.Font = GameFont.Medium;
         var rect = new Rect(inRect)
         {
@@ -94,12 +95,35 @@ public class Dialog_CustomizeWeapon : Window, ICustomizationDialog
         rect3.xMin = rect2.xMax + 10f;
         rect3.yMax -= ButSize.y + 4f;
         Widgets.DrawMenuSection(rect3);
-        TabDrawer.DrawTabs(rect3, tabRecordsToRead);
+        TabDrawer.DrawTabs(rect3, visibleTabRecords);
         rect3 = rect3.ContractedBy(18f);
 
         tabDrawers[curTab].DrawTab(rect3, pawn, ref apparelColorScrollPosition);
         
         DrawBottomButtons(inRect);
+    }
+
+    private void RefreshVisibleTabs()
+    {
+        visibleTabRecords.Clear();
+        CustomizationTabDef firstVisible = null;
+        var curTabVisible = false;
+        foreach (var pair in tabRecords)
+        {
+            if (!tabDrawers[pair.Key].IsVisible(pawn))
+            {
+                continue;
+            }
+
+            firstVisible ??= pair.Key;
+            curTabVisible |= pair.Key == curTab;
+            visibleTabRecords.Add(pair.Value);
+        }
+
+        if (!curTabVisible && firstVisible != null)
+        {
+            curTab = firstVisible;
+        }
     }
 
     private void DrawWeapon(Rect rect)

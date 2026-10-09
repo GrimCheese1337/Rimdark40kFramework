@@ -138,6 +138,15 @@ public class CompMultiColor : CompGraphicParent
     }
 
 
+    /// <summary>
+    /// Whether the texture shown for the given alternate form (null for the base texture) can be recoloured.
+    /// An alternate form with a colorAmount of 0 or less cannot be.
+    /// </summary>
+    public bool TextureColourable(AlternateBaseFormDef alternateBaseForm)
+    {
+        return alternateBaseForm != null ? alternateBaseForm.colorAmount > 0 : Props.baseTextureColourable;
+    }
+
     public void ResetFieldsByAlternateTexture(AlternateBaseFormDef alternateBaseFormDef)
     {
         if (alternateBaseFormDef.incompatibleMaskDefs.Contains(maskDef))

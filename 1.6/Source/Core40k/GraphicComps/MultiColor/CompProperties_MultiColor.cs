@@ -11,6 +11,8 @@ public class CompProperties_MultiColor : CompProperties
     public Color? defaultSecondaryColor;
     public Color? defaultTertiaryColor;
 
+    public bool baseTextureColourable = true;
+
     public CompProperties_MultiColor()
     {
         compClass = typeof(CompMultiColor);

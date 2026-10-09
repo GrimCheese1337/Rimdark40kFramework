@@ -53,6 +53,38 @@ public class CustomizationTabWorker_Comp : CustomizationTabWorker
     }
 }
 
+//Comps plus a base texture or alternate form that can be recoloured.
+public class CustomizationTabWorker_Coloring : CustomizationTabWorker_Comp
+{
+    public override bool AppliesTo(ThingDef thingDef)
+    {
+        if (!base.AppliesTo(thingDef))
+        {
+            return false;
+        }
+
+        if (thingDef.GetCompProperties<CompProperties_MultiColor>() is not { baseTextureColourable: false })
+        {
+            return true;
+        }
+
+        if (!thingDef.HasCompAssignable(typeof(CompAlternateTexture)))
+        {
+            return false;
+        }
+
+        foreach (var alternate in DecorationIndex.AlternatesFor(thingDef))
+        {
+            if (alternate.colorAmount > 0)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
 //Comps plus at least one applicable cosmetic decoration.
 public class CustomizationTabWorker_Decoration : CustomizationTabWorker_Comp
 {
