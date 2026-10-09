@@ -609,7 +609,7 @@ public class DecorationBaseTab : CustomizerTabDrawer
             if (Mouse.IsOver(iconRect))
             {
                 //The tooltip text is only assembled for the icon under the cursor.
-                TooltipHandler.TipRegion(iconRect, () => IconTooltip(decoDef, unlocked, affordable, hasReq, reason, incompatibleReason, noRoom, usedInternalSlots, totalInternalSlots, locked ? lockReason : null), decoDef.GetHashCode());
+                TooltipHandler.TipRegion(iconRect, () => IconTooltip(decoDef, unlocked, affordable, hasReq, reason, incompatibleReason, noRoom, usedInternalSlots, totalInternalSlots, locked ? lockReason : null) + DisplacedApparelWarning(decoDef, decorativeComp), decoDef.GetHashCode());
             }
             
             if (hasDeco)    
@@ -722,6 +722,21 @@ public class DecorationBaseTab : CustomizerTabDrawer
         alternateTextureComps.Clear();
     }
 
+    /// <summary>
+    /// Warns about the worn apparel that fitting a decoration with extra apparel layers would take off.
+    /// </summary>
+    private string DisplacedApparelWarning(DecorationDef decoDef, CompDecorativeBase decorativeComp)
+    {
+        var displaced = ApparelLayerConflictUtility.WornDisplacedBy(selPawn, decorativeComp?.parent as Apparel, decoDef)?
+            .Where(apparel => !selPawn.apparel.IsLocked(apparel)).ToList();
+        if (displaced.NullOrEmpty())
+        {
+            return string.Empty;
+        }
+
+        return "\n" + "BEWH.Framework.Customization.WillRemoveApparel".Translate(displaced.Select(apparel => apparel.LabelCap).ToCommaList(useAnd: true)).Colorize(ColorLibrary.RedReadable);
+    }
+
     private string IconTooltip(DecorationDef decoDef, bool unlocked, bool affordable, bool hasReq, string reason, string incompatibleReason, bool noRoom, int usedInternalSlots, int totalInternalSlots, string lockReason = null)
     {
         var tipTooltip = TooltipCached(decoDef);
@@ -812,6 +827,17 @@ public class DecorationBaseTab : CustomizerTabDrawer
         {
             reason = "BEWH.Framework.Customization.IncompatibleWithCurrentAltBase".Translate();
             return true;
+        }
+
+        if (!decorativeComp.Decorations.ContainsKey(decoDef))
+        {
+            var lockedApparel = ApparelLayerConflictUtility.WornDisplacedBy(selPawn, decorativeComp.parent as Apparel, decoDef)?
+                .Where(apparel => selPawn.apparel.IsLocked(apparel)).ToList();
+            if (!lockedApparel.NullOrEmpty())
+            {
+                reason = "BEWH.Framework.Customization.WouldReplaceLockedApparel".Translate(lockedApparel.Select(apparel => apparel.LabelCap).ToCommaList(useAnd: true));
+                return true;
+            }
         }
 
         List<DecorationDef> conflictingDecorations = null;

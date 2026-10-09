@@ -6,6 +6,8 @@ namespace Core40k;
 
 public static class ShieldUtils
 {
+    public const int AttackedVisibleTicks = 600;
+
     /// <summary>
     /// The first worn apparel carrying <see cref="Comp_PhysicalShield"/>, or null.
     /// </summary>
@@ -62,6 +64,74 @@ public static class ShieldUtils
 
         var job = pawn.CurJobDef;
         return job == JobDefOf.AttackMelee || job == JobDefOf.AttackStatic;
+    }
+
+    /// <summary>
+    /// Whether a worn shield should be drawn: always when the setting says so, otherwise while drafted, fighting or recently attacked.
+    /// </summary>
+    public static bool ShouldShowShield(Pawn pawn, Comp_PhysicalShield shield)
+    {
+        if (Core40kUtils.ModSettings.alwaysShowShields || pawn.Drafted || shield.AttackedRecently)
+        {
+            return true;
+        }
+
+        var job = pawn.CurJobDef;
+        if (job == JobDefOf.AttackMelee || job == JobDefOf.AttackStatic)
+        {
+            return true;
+        }
+
+        return PawnRenderUtility.CarryWeaponOpenly(pawn);
+    }
+
+    /// <summary>
+    /// Makes the wearer's render tree re-check the shield's node and marks the cached pawn texture for re-rendering.
+    /// </summary>
+    public static void RefreshShieldGraphic(Pawn pawn, Apparel shield)
+    {
+        var tree = pawn.Drawer?.renderer?.renderTree;
+        if (tree == null || !tree.Resolved)
+        {
+            return;
+        }
+
+        var node = FindApparelNode(tree.rootNode, shield);
+        if (node != null)
+        {
+            node.requestRecache = true;
+        }
+
+        GlobalTextureAtlasManager.TryMarkPawnFrameSetDirty(pawn);
+    }
+
+    private static PawnRenderNode FindApparelNode(PawnRenderNode node, Apparel apparel)
+    {
+        if (node == null || apparel == null)
+        {
+            return null;
+        }
+
+        if (node.apparel == apparel)
+        {
+            return node;
+        }
+
+        if (node.children == null)
+        {
+            return null;
+        }
+
+        for (var i = 0; i < node.children.Length; i++)
+        {
+            var found = FindApparelNode(node.children[i], apparel);
+            if (found != null)
+            {
+                return found;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -151,6 +221,8 @@ public static class ShieldUtils
         {
             return;
         }
+
+        shield.Notify_Attacked(pawn);
 
         var props = shield.Props;
         if (damageDef.isExplosive && !props.blocksExplosions)

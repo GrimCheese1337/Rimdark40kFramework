@@ -5,8 +5,9 @@ namespace Core40k;
 
 /// <summary>
 /// Render worker for worn shields. Same visibility rules as a backpack, shown on all four rotations,
-/// and hidden while the wearer is downed or asleep when the shield sets hideWhenInactive. Only
-/// field reads here, since this can run in the parallel render phase.
+/// hidden outside combat unless the always-show setting is on, and hidden while the wearer is downed
+/// or asleep when the shield sets hideWhenInactive. Only field reads here, since this can run in the
+/// parallel render phase.
 /// </summary>
 public class PawnRenderNodeWorker_Shield : PawnRenderNodeWorker
 {
@@ -36,9 +37,17 @@ public class PawnRenderNodeWorker_Shield : PawnRenderNodeWorker
             if (apparel != null && Core40kUtils.DefHasComp<Comp_PhysicalShield>(apparel.def))
             {
                 var shield = apparel.GetComp<Comp_PhysicalShield>();
-                if (shield != null && shield.Props.hideWhenInactive && (pawn.Downed || pawn.jobs?.curDriver?.asleep == true))
+                if (shield != null)
                 {
-                    return false;
+                    if (!shield.Visible)
+                    {
+                        return false;
+                    }
+
+                    if (shield.Props.hideWhenInactive && (pawn.Downed || pawn.jobs?.curDriver?.asleep == true))
+                    {
+                        return false;
+                    }
                 }
             }
         }

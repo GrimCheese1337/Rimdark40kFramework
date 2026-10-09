@@ -20,6 +20,8 @@
   <BEWH.Framework.ModSettings.MinimumWorkTooltip>No visit to the station takes less work than this, however small the change.</BEWH.Framework.ModSettings.MinimumWorkTooltip>
   <BEWH.Framework.ModSettings.NotifyRankEligibility>Show a message when a pawn becomes eligible for a new rank</BEWH.Framework.ModSettings.NotifyRankEligibility>
   <BEWH.Framework.ModSettings.NotifyGeneVariantAvailability>Show a message when a new gene variant becomes available to a pawn</BEWH.Framework.ModSettings.NotifyGeneVariantAvailability>
+  <BEWH.Framework.ModSettings.AlwaysShowShields>Always show worn shields</BEWH.Framework.ModSettings.AlwaysShowShields>
+  <BEWH.Framework.ModSettings.AlwaysShowShieldsTooltip>When off, worn shields are only drawn while the wearer is drafted, fighting or was recently attacked.</BEWH.Framework.ModSettings.AlwaysShowShieldsTooltip>
 
   <BEWH.ModSettings.TabMain>Main</BEWH.ModSettings.TabMain>
   <BEWH.ModSettings.TabCustomization>Customization</BEWH.ModSettings.TabCustomization>
@@ -128,6 +130,11 @@
   <BEWH.Framework.Customization.InternalSlotsDesc>How many of this item's internal upgrade slots are filled.</BEWH.Framework.Customization.InternalSlotsDesc>
   <BEWH.Framework.Customization.FittedDecorations>Decorations fitted</BEWH.Framework.Customization.FittedDecorations>
   <BEWH.Framework.Customization.FittedUpgrades>Upgrades fitted</BEWH.Framework.Customization.FittedUpgrades>
+  <BEWH.Framework.Customization.ExtraApparelLayers>Also occupies apparel layer: {0}</BEWH.Framework.Customization.ExtraApparelLayers>
+  <BEWH.Framework.Customization.AdditionalLayers>Additional layers</BEWH.Framework.Customization.AdditionalLayers>
+  <BEWH.Framework.Customization.AdditionalLayersDesc>Apparel layers this item also occupies because of its fitted decorations. Apparel on these layers covering the same body parts cannot be worn with it.</BEWH.Framework.Customization.AdditionalLayersDesc>
+  <BEWH.Framework.Customization.WillRemoveApparel>Fitting this will take off: {0}</BEWH.Framework.Customization.WillRemoveApparel>
+  <BEWH.Framework.Customization.WouldReplaceLockedApparel>Would take off locked apparel: {0}</BEWH.Framework.Customization.WouldReplaceLockedApparel>
   <BEWH.Framework.Customization.ConfirmCostOnly>Applying these changes will cost:\n{0}</BEWH.Framework.Customization.ConfirmCostOnly>
   <BEWH.Framework.Customization.ConfirmWork>Applying these changes will cost:\n{0}\n\nand take {1} work at the station.</BEWH.Framework.Customization.ConfirmWork>
 

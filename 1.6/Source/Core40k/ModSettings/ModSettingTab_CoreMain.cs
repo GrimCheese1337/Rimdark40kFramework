@@ -34,6 +34,10 @@ public class ModSettingTab_CoreMain : ModSettingTab
         listingStandard.CheckboxLabeled("BEWH.Framework.ModSettings.NotifyGeneVariantAvailability".Translate(), ref core40KModSettings.notifyOnGeneVariantAvailability);
 
         scrollViewHeight += ListingHeightIncrease;
+
+        listingStandard.CheckboxLabeled("BEWH.Framework.ModSettings.AlwaysShowShields".Translate(), ref core40KModSettings.alwaysShowShields, "BEWH.Framework.ModSettings.AlwaysShowShieldsTooltip".Translate());
+
+        scrollViewHeight += ListingHeightIncrease;
         
         //Check VEF patches
         listingStandard.GapLine(36);

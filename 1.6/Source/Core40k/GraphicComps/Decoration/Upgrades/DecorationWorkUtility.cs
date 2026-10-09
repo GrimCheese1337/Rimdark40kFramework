@@ -142,6 +142,7 @@ public static class DecorationWorkUtility
             comp.CommitPending();
         }
 
+        ApparelLayerConflictUtility.ResolveWornConflicts(pawn);
         pawn?.Drawer?.renderer?.SetAllGraphicsDirty();
     }
 
@@ -160,6 +161,7 @@ public static class DecorationWorkUtility
             comp.SetOriginals();
         }
 
+        ApparelLayerConflictUtility.ResolveWornConflicts(pawn);
         pawn?.Drawer?.renderer?.SetAllGraphicsDirty();
     }
 

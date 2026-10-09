@@ -239,6 +239,8 @@
     <Compile Include="GraphicComps\Decoration\CompProperties_DecorationBase.cs" />
     <Compile Include="GraphicComps\Decoration\DecorationBaseTab.cs" />
     <Compile Include="GraphicComps\Decoration\DecorationDef.cs" />
+    <Compile Include="GraphicComps\Decoration\ApparelLayerConflictUtility.cs" />
+    <Compile Include="GraphicComps\Decoration\HarmonyPatch_ExtraApparelLayers.cs" />
     <Compile Include="DataStructs\RequirementUtility.cs" />
     <Compile Include="GeneCustomization\CompGeneCustomization.cs" />
     <Compile Include="GeneCustomization\CompProperties_GeneCustomization.cs" />

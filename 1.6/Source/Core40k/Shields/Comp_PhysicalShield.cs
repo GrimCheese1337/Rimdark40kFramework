@@ -9,11 +9,41 @@ public class Comp_PhysicalShield : ThingComp
 {
     private int lastBlockTick = -99999;
 
+    private int lastAttackedTick = -99999;
+
+    public bool Visible;
+
     public CompProperties_PhysicalShield Props => (CompProperties_PhysicalShield)props;
 
     public Pawn Wearer => (parent as Apparel)?.Wearer;
 
     public bool OnCooldown => Find.TickManager.TicksGame - lastBlockTick < Props.blockCooldownTicks;
+
+    public bool AttackedRecently => Find.TickManager.TicksGame - lastAttackedTick < ShieldUtils.AttackedVisibleTicks;
+
+    /// <summary>
+    /// Records that the wearer was attacked, so the shield is drawn when shields are only shown in combat.
+    /// </summary>
+    public void Notify_Attacked(Pawn pawn)
+    {
+        lastAttackedTick = Find.TickManager.TicksGame;
+        UpdateVisibility(pawn);
+    }
+
+    /// <summary>
+    /// Re-evaluates whether the shield should be drawn and refreshes the wearer's graphics when that changes.
+    /// </summary>
+    public void UpdateVisibility(Pawn pawn)
+    {
+        var visible = ShieldUtils.ShouldShowShield(pawn, this);
+        if (visible == Visible)
+        {
+            return;
+        }
+
+        Visible = visible;
+        ShieldUtils.RefreshShieldGraphic(pawn, parent as Apparel);
+    }
 
     public override void PostExposeData()
     {
@@ -92,12 +122,17 @@ public class Comp_PhysicalShield : ThingComp
     {
         base.CompDrawWornExtras();
 
+        var pawn = Wearer;
+        if (pawn != null)
+        {
+            UpdateVisibility(pawn);
+        }
+
         if (!Prefs.DevMode || !DebugSettings.godMode)
         {
             return;
         }
 
-        var pawn = Wearer;
         if (pawn is not { Spawned: true } || !Find.Selector.IsSelected(pawn))
         {
             return;

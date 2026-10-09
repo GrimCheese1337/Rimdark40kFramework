@@ -18,6 +18,49 @@ public class CompDecorativeBase : CompGraphicParent
     protected Dictionary<DecorationDef, DecorationSettings> decorations = new ();
     
     public Dictionary<DecorationDef, DecorationSettings> Decorations => decorations ??= new Dictionary<DecorationDef, DecorationSettings>();
+
+    private List<ApparelLayerDef> extraApparelLayers;
+    private bool extraApparelLayersDirty = true;
+
+    /// <summary>
+    /// The layers the fitted decorations make this apparel occupy beyond those of its def.
+    /// </summary>
+    public List<ApparelLayerDef> ExtraApparelLayers
+    {
+        get
+        {
+            if (!extraApparelLayersDirty && extraApparelLayers != null)
+            {
+                return extraApparelLayers;
+            }
+
+            extraApparelLayersDirty = false;
+            extraApparelLayers = [];
+            var defLayers = parent.def.apparel?.layers;
+            if (defLayers == null)
+            {
+                return extraApparelLayers;
+            }
+
+            foreach (var decoration in Decorations.Keys)
+            {
+                if (decoration?.extraApparelLayers == null)
+                {
+                    continue;
+                }
+
+                foreach (var layer in decoration.extraApparelLayers)
+                {
+                    if (layer != null && !defLayers.Contains(layer) && !extraApparelLayers.Contains(layer))
+                    {
+                        extraApparelLayers.Add(layer);
+                    }
+                }
+            }
+
+            return extraApparelLayers;
+        }
+    }
     
     private List<DecorationDef> unlockedDecorations = [];
 
@@ -178,6 +221,11 @@ public class CompDecorativeBase : CompGraphicParent
             }
         }
 
+        if (parent is Apparel)
+        {
+            ApparelLayerConflictUtility.ResolveWornConflicts(Wearer);
+        }
+
         OnDecorationsChanged();
         Notify_GraphicChanged();
         return true;
@@ -287,6 +335,7 @@ public class CompDecorativeBase : CompGraphicParent
         {
             decorations.Add(decoration, decorationSettings ?? new DecorationSettings());
             AddAbilitiesOf(decoration);
+            extraApparelLayersDirty = true;
         }
 
         if (!drawDatas.ContainsKey(decoration))
@@ -315,6 +364,7 @@ public class CompDecorativeBase : CompGraphicParent
 
         RemoveAbilitiesOf(decoration);
         drawDatas.Remove(decoration);
+        extraApparelLayersDirty = true;
 
         return true;
     }
@@ -384,6 +434,7 @@ public class CompDecorativeBase : CompGraphicParent
             if (decoration == null)
             {
                 decorations.Remove(null);
+                extraApparelLayersDirty = true;
                 drawDatas.Remove(null);
                 continue;
             }
@@ -591,6 +642,7 @@ public class CompDecorativeBase : CompGraphicParent
     public void ResetDecorations()
     {
         decorations = new Dictionary<DecorationDef, DecorationSettings>();
+        extraApparelLayersDirty = true;
         foreach (var decoration in originalDecorations)
         {
             decorations.Add(decoration.Key, new DecorationSettings(decoration.Value));
@@ -778,6 +830,7 @@ public class CompDecorativeBase : CompGraphicParent
         }
 
         decorations = pendingDecorations;
+        extraApparelLayersDirty = true;
         drawDatas = pendingDrawDatas;
 
         foreach (var decoration in pendingUnlock)
@@ -1151,6 +1204,16 @@ public class CompDecorativeBase : CompGraphicParent
                 UsedInternalSlots + " / " + TotalInternalSlots,
                 "BEWH.Framework.Customization.InternalSlotsDesc".Translate(),
                 88);
+        }
+
+        if (parent is Apparel && ExtraApparelLayers.Count > 0)
+        {
+            yield return new StatDrawEntry(
+                StatCategoryDefOf.Apparel,
+                "BEWH.Framework.Customization.AdditionalLayers".Translate(),
+                ApparelLayerConflictUtility.LayersLabel(ExtraApparelLayers),
+                "BEWH.Framework.Customization.AdditionalLayersDesc".Translate(),
+                2750);
         }
 
         foreach (var pair in GetStatModifiersFromDecorations(false))

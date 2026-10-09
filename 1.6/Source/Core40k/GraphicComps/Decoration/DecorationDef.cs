@@ -89,6 +89,8 @@ public class DecorationDef : Def
     
     public List<HediffDef> givesHediffs = [];
 
+    public List<ApparelLayerDef> extraApparelLayers = [];
+
     public bool isInternal = false;
     
     public int slotCost = 1;
@@ -171,6 +173,12 @@ public class DecorationDef : Def
             stringbuilder.AppendLine("BEWH.Framework.Customization.SlotCost".Translate(slotCost));
         }
 
+        if (!extraApparelLayers.NullOrEmpty())
+        {
+            stringbuilder.AppendLine();
+            stringbuilder.AppendLine("BEWH.Framework.Customization.ExtraApparelLayers".Translate(ApparelLayerConflictUtility.LayersLabel(extraApparelLayers)));
+        }
+
         stringbuilder.AppendLine();
         stringbuilder.AppendLine("BEWH.Framework.Customization.WorkAmount".Translate(workAmount.ToString("F0"), RemovalWork.ToString("F0")));
 
@@ -226,6 +234,11 @@ public class DecorationDef : Def
         else if (drawnTextureIconPath.NullOrEmpty() && this is not AlternateBaseFormDef)
         {
             yield return "no drawnTextureIconPath and not marked isInternal - nothing will be drawn for this decoration";
+        }
+
+        if (extraApparelLayers != null && extraApparelLayers.Contains(null))
+        {
+            yield return "extraApparelLayers contains a null layer";
         }
 
         if (cost.NullOrEmpty())
