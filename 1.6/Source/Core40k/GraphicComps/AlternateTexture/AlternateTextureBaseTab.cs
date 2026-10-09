@@ -47,6 +47,7 @@ public class AlternateTextureBaseTab : CustomizerTabDrawer
             {
                 value.SortBy(def => def.sortOrder);
             }
+            tempDictionary.First().Value.Insert(0, null);
             alternateBaseFormByTypeForComp.Add(alternateComp, tempDictionary);
             compsWithContent.Add(alternateComp);
 
