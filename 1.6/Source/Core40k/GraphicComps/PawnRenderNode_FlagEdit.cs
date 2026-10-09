@@ -115,12 +115,13 @@ public class PawnRenderNode_FlagEdit : PawnRenderNode_Apparel
     public override Graphic GraphicFor(Pawn pawn)
     {
         var defMod = apparel?.def?.GetModExtension<DefModExtension_TextureFlags>();
-        if (defMod == null)
+        var alternatePath = apparel?.GetComp<CompAlternateTexture>()?.CurrentAlternateBaseForm?.drawnTextureIconPath;
+        if (defMod == null && alternatePath.NullOrEmpty())
         {
             return base.GraphicFor(pawn);
         }
         
-        var modifiedPath = ModifyPathByFlags(defMod.SwapFlagsByOrder, pawn);
+        var modifiedPath = defMod == null ? string.Empty : ModifyPathByFlags(defMod.SwapFlagsByOrder, pawn);
         
         var path = Props.texPath;
         
@@ -136,10 +137,15 @@ public class PawnRenderNode_FlagEdit : PawnRenderNode_Apparel
                 break;
             }
         }
+
+        if (!alternatePath.NullOrEmpty())
+        {
+            path = alternatePath;
+        }
         
         string maskPath = null;
         var multiColor = apparel.GetComp<CompMultiColor>();
-        if (multiColor?.MaskDef != null)
+        if (defMod != null && multiColor?.MaskDef != null)
         {
             if (defMod.ShouldExpandMaskPath(multiColor.MaskDef, Props.texSeed))
             {
@@ -147,7 +153,7 @@ public class PawnRenderNode_FlagEdit : PawnRenderNode_Apparel
             }
         }
         
-        if (defMod.ShouldExpandBasePath(Props.texSeed))
+        if (defMod != null && defMod.ShouldExpandBasePath(Props.texSeed))
         {
             path += modifiedPath;
             if (maskPath != null)
