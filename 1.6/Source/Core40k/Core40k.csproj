@@ -183,6 +183,7 @@
     <Compile Include="DefModExtensions\DefModExtension_InitialGoodwill.cs" />
     <Compile Include="DefModExtensions\DefModExtension_LockedByResearch.cs" />
     <Compile Include="DefModExtensions\DefModExtension_PawnKindRanks.cs" />
+    <Compile Include="DefModExtensions\DefModExtension_StatDamageScaling.cs" />
     <Compile Include="DefModExtensions\DefModExtension_TargetBodyParts.cs" />
     <Compile Include="GameComponent_CoreUtils.cs" />
     <Compile Include="GeneClasses\Gene_AddRandomGeneAndOrTraitByWeight.cs" />
@@ -310,6 +311,7 @@
     <Compile Include="HarmonyPatches\HarmonyPatch_IgnoreMovespeedDecrease.cs" />
     <Compile Include="HarmonyPatches\HarmonyPatch_InitialGoodwillPatch.cs" />
     <Compile Include="HarmonyPatches\HarmonyPatch_LockedByResearch.cs" />
+    <Compile Include="HarmonyPatches\HarmonyPatch_StatDamageScalingPatch.cs" />
     <Compile Include="HarmonyPatches\HarmonyPatch_ResearchUnlockedDefs.cs" />
     <Compile Include="HarmonyPatches\HarmonyPatch_QualityCreatedBoostFromGenePatch.cs" />
     <Compile Include="HarmonyPatches\HarmonyPatch_RelevantGearIncludesComps.cs" />

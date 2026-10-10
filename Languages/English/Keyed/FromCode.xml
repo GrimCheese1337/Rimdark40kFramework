@@ -336,4 +336,18 @@
     <BEWH.Framework.Shield.Stat.Explosions>Blocks explosions</BEWH.Framework.Shield.Stat.Explosions>
     <BEWH.Framework.Shield.Stat.ExplosionsDesc>Whether the shield can protect against explosions.</BEWH.Framework.Shield.Stat.ExplosionsDesc>
 
+    <!-- Stat damage scaling -->
+    <BEWH.Framework.StatDamageScaling.StatLabel>Damage scaling</BEWH.Framework.StatDamageScaling.StatLabel>
+    <BEWH.Framework.StatDamageScaling.Desc>This weapon's damage changes based on stats of its wielder or of what it hits. Scaling is applied before armor.</BEWH.Framework.StatDamageScaling.Desc>
+    <BEWH.Framework.StatDamageScaling.Wielder>wielder</BEWH.Framework.StatDamageScaling.Wielder>
+    <BEWH.Framework.StatDamageScaling.Target>target</BEWH.Framework.StatDamageScaling.Target>
+    <BEWH.Framework.StatDamageScaling.EntryHeader>{0} of the {1}:</BEWH.Framework.StatDamageScaling.EntryHeader>
+    <BEWH.Framework.StatDamageScaling.PerPoint>{0} damage per point above {1}</BEWH.Framework.StatDamageScaling.PerPoint>
+    <BEWH.Framework.StatDamageScaling.CurvePoint>at {0}: {1} damage</BEWH.Framework.StatDamageScaling.CurvePoint>
+    <BEWH.Framework.StatDamageScaling.NonPawns>Also applies to non-pawns.</BEWH.Framework.StatDamageScaling.NonPawns>
+    <BEWH.Framework.StatDamageScaling.DamageTypes>Only affects: {0}</BEWH.Framework.StatDamageScaling.DamageTypes>
+    <BEWH.Framework.StatDamageScaling.Limit>Total multiplier is limited to x{0} - x{1}.</BEWH.Framework.StatDamageScaling.Limit>
+    <BEWH.Framework.StatDamageScaling.Current>Current from {0}: {1}</BEWH.Framework.StatDamageScaling.Current>
+    <BEWH.Framework.StatDamageScaling.TargetDependent>Target-based scaling depends on what is hit.</BEWH.Framework.StatDamageScaling.TargetDependent>
+
 </LanguageData>
