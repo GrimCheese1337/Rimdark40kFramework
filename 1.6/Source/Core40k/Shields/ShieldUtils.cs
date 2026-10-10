@@ -177,13 +177,12 @@ public static class ShieldUtils
     public static float BlockChance(Pawn pawn, Comp_PhysicalShield shield, DamageInfo dinfo, ShieldZone zone, bool weaponArmSide)
     {
         var props = shield.Props;
-        var chance = props.BlockChanceFor(zone, weaponArmSide);
+        var chance = props.BlockChanceFor(zone, weaponArmSide, dinfo.Def.isRanged || dinfo.Def.isExplosive);
         if (chance <= 0f)
         {
             return 0f;
         }
 
-        chance *= dinfo.Def.isRanged || dinfo.Def.isExplosive ? props.rangedFactor : props.meleeFactor;
         chance *= pawn.GetStatValue(Core40kDefOf.BEWH_ShieldProficiency);
         if (!IsReady(pawn))
         {
@@ -195,13 +194,19 @@ public static class ShieldUtils
     }
 
     /// <summary>
-    /// Called from Pawn.PreApplyDamage after vanilla absorption. Blocks the hit outright, or scales it by the
-    /// zone's damage factor.
+    /// Called from the worn shield's PostPreApplyDamage, inside vanilla's worn apparel absorption loop.
+    /// Absorbs the hit when the block roll succeeds.
     /// </summary>
-    public static void TryApplyShield(Pawn pawn, ref DamageInfo dinfo, ref bool absorbed)
+    public static void TryApplyShield(Pawn pawn, Comp_PhysicalShield shield, DamageInfo dinfo, out bool absorbed)
     {
+        absorbed = false;
         var damageDef = dinfo.Def;
         if (damageDef == null || dinfo.IgnoreArmor || damageDef.ignoreShields)
+        {
+            return;
+        }
+
+        if (dinfo.Instigator == null || dinfo.Instigator == pawn)
         {
             return;
         }
@@ -211,13 +216,7 @@ public static class ShieldUtils
             return;
         }
 
-        if (pawn.apparel == null || pawn.apparel.WornApparelCount == 0)
-        {
-            return;
-        }
-
-        var shield = GetWornShield(pawn);
-        if (shield == null)
+        if (GetWornShield(pawn) != shield)
         {
             return;
         }
@@ -243,21 +242,16 @@ public static class ShieldUtils
         var zone = props.ZoneFor(delta);
         var weaponArmSide = props.IsWeaponArmSide(zone, delta);
 
-        if (!shield.OnCooldown)
+        if (shield.OnCooldown)
         {
-            var chance = BlockChance(pawn, shield, dinfo, zone, weaponArmSide);
-            if (chance > 0f && Rand.Chance(chance))
-            {
-                absorbed = true;
-                shield.Notify_Blocked(pawn, dinfo);
-                return;
-            }
+            return;
         }
 
-        var factor = props.DamageFactorFor(zone, weaponArmSide);
-        if (factor < 1f)
+        var chance = BlockChance(pawn, shield, dinfo, zone, weaponArmSide);
+        if (chance > 0f && Rand.Chance(chance))
         {
-            dinfo.SetAmount(dinfo.Amount * factor);
+            absorbed = true;
+            shield.Notify_Blocked(pawn, dinfo);
         }
     }
 }

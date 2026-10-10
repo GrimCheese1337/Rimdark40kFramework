@@ -49,6 +49,58 @@ public class Comp_PhysicalShield : ThingComp
     {
         base.PostExposeData();
         Scribe_Values.Look(ref lastBlockTick, "lastBlockTick", -99999);
+
+        if (Scribe.mode == LoadSaveMode.PostLoadInit)
+        {
+            var equippable = parent.GetComp<CompEquippable>();
+            if (equippable != null && equippable.verbTracker == null)
+            {
+                equippable.verbTracker = new VerbTracker(equippable);
+            }
+
+            SetBashVerbCaster(Wearer);
+        }
+    }
+
+    public override void PostPreApplyDamage(ref DamageInfo dinfo, out bool absorbed)
+    {
+        absorbed = false;
+        var pawn = Wearer;
+        if (pawn == null)
+        {
+            return;
+        }
+
+        ShieldUtils.TryApplyShield(pawn, this, dinfo, out absorbed);
+    }
+
+    public override void Notify_Equipped(Pawn pawn)
+    {
+        base.Notify_Equipped(pawn);
+        SetBashVerbCaster(pawn);
+    }
+
+    public override void Notify_Unequipped(Pawn pawn)
+    {
+        base.Notify_Unequipped(pawn);
+        SetBashVerbCaster(null);
+    }
+
+    /// <summary>
+    /// Vanilla adds worn apparel's melee verbs to the wearer's melee pool but never assigns them a caster.
+    /// </summary>
+    private void SetBashVerbCaster(Pawn pawn)
+    {
+        var verbs = parent.GetComp<CompEquippable>()?.AllVerbs;
+        if (verbs == null)
+        {
+            return;
+        }
+
+        for (var i = 0; i < verbs.Count; i++)
+        {
+            verbs[i].caster = pawn;
+        }
     }
 
     /// <summary>
@@ -64,6 +116,7 @@ public class Comp_PhysicalShield : ThingComp
         }
 
         PlayBlockEffects(pawn, dinfo);
+        TryCounterBash(pawn, dinfo);
 
         if (!parent.def.useHitPoints)
         {
@@ -74,6 +127,42 @@ public class Comp_PhysicalShield : ThingComp
         if (loss > 0)
         {
             parent.TakeDamage(new DamageInfo(dinfo.Def, loss));
+        }
+    }
+
+    private void TryCounterBash(Pawn pawn, DamageInfo dinfo)
+    {
+        var p = Props;
+        if (p.counterBashChance <= 0f || ShieldBashUtility.ApplyingQueued || dinfo.Def.isRanged || dinfo.Def.isExplosive)
+        {
+            return;
+        }
+
+        if (dinfo.Instigator is not Pawn attacker || attacker == pawn || !attacker.Spawned || !pawn.Spawned || attacker.Map != pawn.Map || !attacker.Position.AdjacentTo8WayOrInside(pawn.Position))
+        {
+            return;
+        }
+
+        var chance = Mathf.Clamp01(p.counterBashChance * pawn.GetStatValue(Core40kDefOf.BEWH_ShieldProficiency));
+        if (!Rand.Chance(chance))
+        {
+            return;
+        }
+
+        ShieldBashUtility.Queue(pawn, attacker, new ShieldBashParams
+        {
+            damageDef = p.counterBashDamageDef,
+            damageAmount = p.counterBashDamage,
+            armorPenetration = p.counterBashArmorPenetration,
+            stunTicks = p.counterBashStunTicks,
+            knockbackCells = p.counterBashKnockbackCells,
+            maxKnockbackBodySize = p.counterBashMaxKnockbackBodySize,
+            weapon = parent.def
+        });
+
+        if (p.showBlockText)
+        {
+            MoteMaker.ThrowText(attacker.DrawPos, attacker.Map, "BEWH.Framework.Shield.CounterBash".Translate());
         }
     }
 
@@ -167,20 +256,16 @@ public class Comp_PhysicalShield : ThingComp
         var p = Props;
         var priority = 5000;
 
-        yield return Entry(category, "FrontBlock", p.frontBlockChance.ToStringPercent(), priority--);
-        yield return Entry(category, "SideBlock", p.sideBlockChance.ToStringPercent(), priority--);
-        yield return Entry(category, "BackBlock", p.backBlockChance.ToStringPercent(), priority--);
+        yield return Entry(category, "MeleeBlock", p.meleeBlockChance.ToStringPercent(), priority--);
+        yield return Entry(category, "RangedBlock", p.rangedBlockChance.ToStringPercent(), priority--);
 
-        if (p.frontDamageFactor < 1f || p.sideDamageFactor < 1f || p.backDamageFactor < 1f)
+        if (p.frontBlockFactor != 1f)
         {
-            yield return Entry(category, "FrontReduction", (1f - p.frontDamageFactor).ToStringPercent(), priority--);
-            yield return Entry(category, "SideReduction", (1f - p.sideDamageFactor).ToStringPercent(), priority--);
-            yield return Entry(category, "BackReduction", (1f - p.backDamageFactor).ToStringPercent(), priority--);
+            yield return Entry(category, "FrontFactor", "x" + p.frontBlockFactor.ToStringPercent(), priority--);
         }
-        else
-        {
-            priority -= 3;
-        }
+
+        yield return Entry(category, "SideFactor", "x" + p.sideBlockFactor.ToStringPercent(), priority--);
+        yield return Entry(category, "BackFactor", "x" + p.backBlockFactor.ToStringPercent(), priority--);
 
         yield return Entry(category, "FrontArc", p.frontArcDegrees.ToString("F0") + "°", priority--);
         yield return Entry(category, "BackArc", p.backArcDegrees.ToString("F0") + "°", priority--);
@@ -190,19 +275,14 @@ public class Comp_PhysicalShield : ThingComp
             yield return Entry(category, "OffSide", "x" + p.offSideFactor.ToStringPercent(), priority--);
         }
 
-        if (p.meleeFactor != 1f)
-        {
-            yield return Entry(category, "Melee", "x" + p.meleeFactor.ToStringPercent(), priority--);
-        }
-
-        if (p.rangedFactor != 1f)
-        {
-            yield return Entry(category, "Ranged", "x" + p.rangedFactor.ToStringPercent(), priority--);
-        }
-
         yield return Entry(category, "ArmorRating", p.shieldArmorRating.ToStringPercent(), priority--);
         yield return Entry(category, "MaxBlock", p.maxBlockChance.ToStringPercent(), priority--);
-        yield return Entry(category, "Explosions", p.blocksExplosions ? "Yes".Translate() : "No".Translate(), priority);
+        yield return Entry(category, "Explosions", p.blocksExplosions ? "Yes".Translate() : "No".Translate(), priority--);
+
+        if (p.counterBashChance > 0f)
+        {
+            yield return Entry(category, "CounterBash", p.counterBashChance.ToStringPercent(), priority);
+        }
     }
 
     private static StatDrawEntry Entry(StatCategoryDef category, string key, string value, int priority)

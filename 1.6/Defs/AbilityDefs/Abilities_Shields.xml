@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <AbilityDef Name="BEWH_ShieldBashBase" ParentName="AbilityTouchBase" Abstract="True">
+    <hostile>true</hostile>
+    <casterMustBeCapableOfViolence>true</casterMustBeCapableOfViolence>
+    <displayGizmoWhileUndrafted>false</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>true</disableGizmoWhileUndrafted>
+    <cooldownTicksRange>900</cooldownTicksRange>
+    <verbProperties>
+      <verbClass>Verb_CastAbilityTouch</verbClass>
+      <drawAimPie>false</drawAimPie>
+      <range>-1</range>
+      <warmupTime>0.4</warmupTime>
+      <targetParams>
+        <canTargetSelf>false</canTargetSelf>
+        <canTargetPawns>true</canTargetPawns>
+        <canTargetBuildings>false</canTargetBuildings>
+      </targetParams>
+    </verbProperties>
+  </AbilityDef>
+
+</Defs>

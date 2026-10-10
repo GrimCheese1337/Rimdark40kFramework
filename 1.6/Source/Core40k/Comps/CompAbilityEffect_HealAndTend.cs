@@ -54,12 +54,12 @@ public class CompAbilityEffect_HealAndTend : CompAbilityEffect
             
         if (target.Thing is not Pawn pawn)
         {
-            return "BEWH.MankindsFinest.Ability.MustBePawn".Translate();
+            return "BEWH.Framework.Ability.MustBePawn".Translate();
         }
 
         if (!pawn.Downed && !pawn.InBed())
         {
-            return "BEWH.MankindsFinest.Ability.MustBeDownedOrInBed".Translate(pawn.NameShortColored);
+            return "BEWH.Framework.Ability.MustBeDownedOrInBed".Translate(pawn.NameShortColored);
         }
 
         return null;

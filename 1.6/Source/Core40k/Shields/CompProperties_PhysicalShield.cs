@@ -11,19 +11,16 @@ public class CompProperties_PhysicalShield : CompProperties
     public float frontArcDegrees = 90f;
     public float backArcDegrees = 90f;
 
-    public float frontBlockChance = 0.40f;
-    public float sideBlockChance = 0.15f;
-    public float backBlockChance = 0f;
+    public float meleeBlockChance = 0.40f;
+    public float rangedBlockChance = 0.40f;
 
-    public float frontDamageFactor = 1f;
-    public float sideDamageFactor = 1f;
-    public float backDamageFactor = 1f;
+    public float frontBlockFactor = 1f;
+    public float sideBlockFactor = 0.4f;
+    public float backBlockFactor = 0f;
 
     public bool shieldOnLeft = true;
     public float offSideFactor = 1f;
 
-    public float meleeFactor = 1f;
-    public float rangedFactor = 1f;
     public bool blocksExplosions = false;
     public List<DamageDef> neverBlocks;
 
@@ -39,6 +36,14 @@ public class CompProperties_PhysicalShield : CompProperties
     public bool hideWhenInactive = false;
 
     public float blockSkillXp = 50f;
+
+    public float counterBashChance = 0f;
+    public int counterBashStunTicks = 60;
+    public float counterBashDamage = 0f;
+    public DamageDef counterBashDamageDef;
+    public float counterBashArmorPenetration = -1f;
+    public int counterBashKnockbackCells = 0;
+    public float counterBashMaxKnockbackBodySize = 1.5f;
 
     public EffecterDef blockEffecter;
     public bool showBlockText = true;
@@ -80,28 +85,24 @@ public class CompProperties_PhysicalShield : CompProperties
         return shieldOnLeft ? delta > 0f : delta < 0f;
     }
 
-    public float BlockChanceFor(ShieldZone zone, bool weaponArmSide)
+    /// <summary>
+    /// Base block chance for a hit from the given zone, before the wearer's proficiency and readiness.
+    /// </summary>
+    public float BlockChanceFor(ShieldZone zone, bool weaponArmSide, bool ranged)
     {
-        var chance = zone switch
+        var zoneFactor = zone switch
         {
-            ShieldZone.Front => frontBlockChance,
-            ShieldZone.Side => sideBlockChance,
-            _ => backBlockChance
+            ShieldZone.Front => frontBlockFactor,
+            ShieldZone.Side => sideBlockFactor,
+            _ => backBlockFactor
         };
 
-        return weaponArmSide ? chance * offSideFactor : chance;
-    }
-
-    public float DamageFactorFor(ShieldZone zone, bool weaponArmSide)
-    {
-        var factor = zone switch
+        if (weaponArmSide)
         {
-            ShieldZone.Front => frontDamageFactor,
-            ShieldZone.Side => sideDamageFactor,
-            _ => backDamageFactor
-        };
+            zoneFactor *= offSideFactor;
+        }
 
-        return weaponArmSide ? 1f - (1f - factor) * offSideFactor : factor;
+        return (ranged ? rangedBlockChance : meleeBlockChance) * zoneFactor;
     }
 
     public override IEnumerable<string> ConfigErrors(ThingDef parentDef)
@@ -125,9 +126,19 @@ public class CompProperties_PhysicalShield : CompProperties
             yield return $"{nameof(CompProperties_PhysicalShield)} on {parentDef.defName} has invalid arcs: front and back must be non-negative and add up to at most 360.";
         }
 
-        if (frontBlockChance is < 0f or > 1f || sideBlockChance is < 0f or > 1f || backBlockChance is < 0f or > 1f)
+        if (meleeBlockChance is < 0f or > 1f || rangedBlockChance is < 0f or > 1f)
         {
             yield return $"{nameof(CompProperties_PhysicalShield)} on {parentDef.defName} has a block chance outside 0-1.";
+        }
+
+        if (frontBlockFactor < 0f || sideBlockFactor < 0f || backBlockFactor < 0f)
+        {
+            yield return $"{nameof(CompProperties_PhysicalShield)} on {parentDef.defName} has a negative zone block factor.";
+        }
+
+        if (!parentDef.tools.NullOrEmpty() && (parentDef.comps == null || !parentDef.comps.Any(comp => comp.compClass != null && typeof(CompEquippable).IsAssignableFrom(comp.compClass))))
+        {
+            yield return $"{nameof(CompProperties_PhysicalShield)} on {parentDef.defName} has tools but no CompProperties_Equippable, so the shield bash attacks will never be used.";
         }
     }
 }

@@ -22,6 +22,7 @@ public class GameComponent_CoreUtils : GameComponent
     public GameComponent_CoreUtils(Game game)
     {
         ArtifactWeaponUtility.ClearTicking();
+        ShieldBashUtility.ClearQueue();
     }
 
     public override void GameComponentTick()
@@ -29,6 +30,7 @@ public class GameComponent_CoreUtils : GameComponent
         base.GameComponentTick();
         GeneVariantAvailabilityNotifier.Tick();
         ArtifactWeaponUtility.Tick();
+        ShieldBashUtility.Tick();
     }
 
     public override void LoadedGame()

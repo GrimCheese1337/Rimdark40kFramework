@@ -279,6 +279,8 @@
 
   <!-- Abilities -->
   <BEWH.Framework.Ability.Charges>Charges: {0} / {1}</BEWH.Framework.Ability.Charges>
+  <BEWH.Framework.Ability.MustBePawn>Must target a pawn</BEWH.Framework.Ability.MustBePawn>
+  <BEWH.Framework.Ability.MustBeDownedOrInBed>{0} must be downed or in bed</BEWH.Framework.Ability.MustBeDownedOrInBed>
 
   <BEWH.Framework.Comp.DeterioratingOutsideContainer>Deteriorates outside suitable container.</BEWH.Framework.Comp.DeterioratingOutsideContainer>
   <BEWH.Framework.Comp.SuitableContainers>Suitable containers:</BEWH.Framework.Comp.SuitableContainers>
@@ -307,34 +309,33 @@
     <BEWH.Framework.Shield.Proficiency.NoShield>No shield worn.</BEWH.Framework.Shield.Proficiency.NoShield>
     <BEWH.Framework.Shield.Proficiency.Worn>Shield: {0}</BEWH.Framework.Shield.Proficiency.Worn>
     <BEWH.Framework.Shield.Proficiency.Inactive>Shield unusable: {0}</BEWH.Framework.Shield.Proficiency.Inactive>
-    <BEWH.Framework.Shield.Stat.FrontBlock>Block chance (front)</BEWH.Framework.Shield.Stat.FrontBlock>
-    <BEWH.Framework.Shield.Stat.FrontBlockDesc>Base chance to stop an attack coming from in front of the wearer outright. Multiplied by the wearer's shield proficiency, reduced when not drafted or fighting, and reduced by armor penetration above the shield's armor rating.</BEWH.Framework.Shield.Stat.FrontBlockDesc>
-    <BEWH.Framework.Shield.Stat.SideBlock>Block chance (sides)</BEWH.Framework.Shield.Stat.SideBlock>
-    <BEWH.Framework.Shield.Stat.SideBlockDesc>Base chance to stop an attack coming from the wearer's side outright. Modified the same way as the front block chance.</BEWH.Framework.Shield.Stat.SideBlockDesc>
-    <BEWH.Framework.Shield.Stat.BackBlock>Block chance (back)</BEWH.Framework.Shield.Stat.BackBlock>
-    <BEWH.Framework.Shield.Stat.BackBlockDesc>Base chance to stop an attack coming from behind the wearer outright. Modified the same way as the front block chance.</BEWH.Framework.Shield.Stat.BackBlockDesc>
-    <BEWH.Framework.Shield.Stat.FrontReduction>Damage reduction (front)</BEWH.Framework.Shield.Stat.FrontReduction>
-    <BEWH.Framework.Shield.Stat.FrontReductionDesc>Damage taken off an attack from the front that the shield did not block. Applied before armor.</BEWH.Framework.Shield.Stat.FrontReductionDesc>
-    <BEWH.Framework.Shield.Stat.SideReduction>Damage reduction (sides)</BEWH.Framework.Shield.Stat.SideReduction>
-    <BEWH.Framework.Shield.Stat.SideReductionDesc>Damage taken off an attack from the side that the shield did not block. Applied before armor.</BEWH.Framework.Shield.Stat.SideReductionDesc>
-    <BEWH.Framework.Shield.Stat.BackReduction>Damage reduction (back)</BEWH.Framework.Shield.Stat.BackReduction>
-    <BEWH.Framework.Shield.Stat.BackReductionDesc>Damage taken off an attack from behind that the shield did not block. Applied before armor.</BEWH.Framework.Shield.Stat.BackReductionDesc>
+    <BEWH.Framework.Shield.Stat.MeleeBlock>Block chance (melee)</BEWH.Framework.Shield.Stat.MeleeBlock>
+    <BEWH.Framework.Shield.Stat.MeleeBlockDesc>Base chance to stop a melee attack outright. Multiplied by the zone the attack comes from and the wearer's shield proficiency, reduced when not drafted or fighting, and reduced by armor penetration above the shield's armor rating.</BEWH.Framework.Shield.Stat.MeleeBlockDesc>
+    <BEWH.Framework.Shield.Stat.RangedBlock>Block chance (ranged)</BEWH.Framework.Shield.Stat.RangedBlock>
+    <BEWH.Framework.Shield.Stat.RangedBlockDesc>Base chance to stop a ranged attack or explosion outright. Modified the same way as the melee block chance.</BEWH.Framework.Shield.Stat.RangedBlockDesc>
+    <BEWH.Framework.Shield.Stat.FrontFactor>Front protection</BEWH.Framework.Shield.Stat.FrontFactor>
+    <BEWH.Framework.Shield.Stat.FrontFactorDesc>Multiplier on the block chance for attacks coming from in front of the wearer.</BEWH.Framework.Shield.Stat.FrontFactorDesc>
+    <BEWH.Framework.Shield.Stat.SideFactor>Side protection</BEWH.Framework.Shield.Stat.SideFactor>
+    <BEWH.Framework.Shield.Stat.SideFactorDesc>Multiplier on the block chance for attacks coming from the wearer's side.</BEWH.Framework.Shield.Stat.SideFactorDesc>
+    <BEWH.Framework.Shield.Stat.BackFactor>Back protection</BEWH.Framework.Shield.Stat.BackFactor>
+    <BEWH.Framework.Shield.Stat.BackFactorDesc>Multiplier on the block chance for attacks coming from behind the wearer.</BEWH.Framework.Shield.Stat.BackFactorDesc>
     <BEWH.Framework.Shield.Stat.FrontArc>Front arc</BEWH.Framework.Shield.Stat.FrontArc>
     <BEWH.Framework.Shield.Stat.FrontArcDesc>Width of the zone in front of the wearer that counts as the front. The sides cover whatever the front and back arcs leave.</BEWH.Framework.Shield.Stat.FrontArcDesc>
     <BEWH.Framework.Shield.Stat.BackArc>Back arc</BEWH.Framework.Shield.Stat.BackArc>
     <BEWH.Framework.Shield.Stat.BackArcDesc>Width of the zone behind the wearer that counts as the back.</BEWH.Framework.Shield.Stat.BackArcDesc>
     <BEWH.Framework.Shield.Stat.OffSide>Weapon-arm side</BEWH.Framework.Shield.Stat.OffSide>
     <BEWH.Framework.Shield.Stat.OffSideDesc>Multiplier on side protection for the side the shield is not held on.</BEWH.Framework.Shield.Stat.OffSideDesc>
-    <BEWH.Framework.Shield.Stat.Melee>Against melee</BEWH.Framework.Shield.Stat.Melee>
-    <BEWH.Framework.Shield.Stat.MeleeDesc>Multiplier on block chance against melee attacks.</BEWH.Framework.Shield.Stat.MeleeDesc>
-    <BEWH.Framework.Shield.Stat.Ranged>Against ranged</BEWH.Framework.Shield.Stat.Ranged>
-    <BEWH.Framework.Shield.Stat.RangedDesc>Multiplier on block chance against ranged attacks and explosions.</BEWH.Framework.Shield.Stat.RangedDesc>
     <BEWH.Framework.Shield.Stat.ArmorRating>Shield armor rating</BEWH.Framework.Shield.Stat.ArmorRating>
     <BEWH.Framework.Shield.Stat.ArmorRatingDesc>Armor penetration the shield shrugs off. Every point of penetration above this is taken directly off the block chance.</BEWH.Framework.Shield.Stat.ArmorRatingDesc>
     <BEWH.Framework.Shield.Stat.MaxBlock>Maximum block chance</BEWH.Framework.Shield.Stat.MaxBlock>
     <BEWH.Framework.Shield.Stat.MaxBlockDesc>The block chance can never exceed this, however skilled the wearer.</BEWH.Framework.Shield.Stat.MaxBlockDesc>
     <BEWH.Framework.Shield.Stat.Explosions>Blocks explosions</BEWH.Framework.Shield.Stat.Explosions>
     <BEWH.Framework.Shield.Stat.ExplosionsDesc>Whether the shield can protect against explosions.</BEWH.Framework.Shield.Stat.ExplosionsDesc>
+    <BEWH.Framework.Shield.Stat.CounterBash>Counter-bash chance</BEWH.Framework.Shield.Stat.CounterBash>
+    <BEWH.Framework.Shield.Stat.CounterBashDesc>Base chance that a blocked melee attack is answered with a shield bash that staggers the attacker. Multiplied by the wearer's shield proficiency.</BEWH.Framework.Shield.Stat.CounterBashDesc>
+    <BEWH.Framework.Shield.CounterBash>Shield bash</BEWH.Framework.Shield.CounterBash>
+    <BEWH.Framework.Shield.Bash.NoShield>Needs a worn shield</BEWH.Framework.Shield.Bash.NoShield>
+    <BEWH.Framework.Shield.Bash.Inactive>Shield unusable: {0}</BEWH.Framework.Shield.Bash.Inactive>
 
     <!-- Stat damage scaling -->
     <BEWH.Framework.StatDamageScaling.StatLabel>Damage scaling</BEWH.Framework.StatDamageScaling.StatLabel>

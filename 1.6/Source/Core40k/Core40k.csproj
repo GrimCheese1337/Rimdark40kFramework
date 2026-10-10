@@ -400,7 +400,10 @@
     <Compile Include="Shields\StatPart_ShieldProficiency.cs" />
     <Compile Include="Shields\StatWorker_Shields.cs" />
     <Compile Include="Shields\PawnRenderNodeWorker_Shield.cs" />
-    <Compile Include="Shields\HarmonyPatch_ShieldPreApplyDamage.cs" />
+    <Compile Include="Shields\ShieldBashParams.cs" />
+    <Compile Include="Shields\ShieldBashUtility.cs" />
+    <Compile Include="Shields\CompProperties_AbilityShieldBash.cs" />
+    <Compile Include="Shields\CompAbilityEffect_ShieldBash.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\packages.config" />
