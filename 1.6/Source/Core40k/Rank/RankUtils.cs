@@ -55,7 +55,7 @@ public static class RankUtils
             return;
         }
 
-        var countTowardsLimit = pawn.Faction is { IsPlayer: true };
+        var countTowardsLimit = pawn.Faction is { IsPlayer: true } && Current.ProgramState == ProgramState.Playing;
 
         var planned = new List<RankDef>();
         var daysPerRank = new Dictionary<RankDef, float>();

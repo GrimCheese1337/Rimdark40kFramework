@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using RimWorld;
 using Verse;
 
 namespace Core40k;
@@ -27,7 +28,35 @@ public class GameComponent_RankInfo : GameComponent
     public override void StartedNewGame()
     {
         base.StartedNewGame();
+        RecountRankLimits();
         eligibilityBaselineDone = true;
+    }
+
+    /// <summary>
+    /// Rebuilds the rank limit counts from the player's living pawns.
+    /// </summary>
+    public void RecountRankLimits()
+    {
+        rankLimits.Clear();
+
+        foreach (var pawn in PawnsFinder.AllMapsCaravansAndTravellingTransporters_Alive_OfPlayerFaction)
+        {
+            var comp = pawn.GetComp<CompRankInfo>();
+            if (comp == null)
+            {
+                continue;
+            }
+
+            comp.LimitCountedRanks.Clear();
+
+            foreach (var rank in comp.UnlockedRanks.Where(RankUtils.IsLimited))
+            {
+                PawnGainedRank(rank);
+                comp.LimitCountedRanks.Add(rank);
+            }
+        }
+
+        cachedColonistCountTick = -1;
     }
 
     public override void LoadedGame()
