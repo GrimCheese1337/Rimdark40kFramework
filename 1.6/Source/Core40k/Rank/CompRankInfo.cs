@@ -158,7 +158,7 @@ public class CompRankInfo : ThingComp
             }
 
             apparelSetsChecked = true;
-            if (ApparelSetIndex.AnySets && WearsApparelSetPiece())
+            if (ApparelSetIndex.AnySets && HasAnySetPiece())
             {
                 apparelSets = new ApparelSetState(this);
             }
@@ -167,19 +167,29 @@ public class CompRankInfo : ThingComp
         }
     }
 
-    private bool WearsApparelSetPiece()
+    private bool HasAnySetPiece()
     {
         var worn = ParentPawn?.apparel?.WornApparel;
-        if (worn == null)
+        if (worn != null)
         {
-            return false;
+            foreach (var apparel in worn)
+            {
+                if (ApparelSetIndex.IsPiece(apparel?.def) || ApparelSetIndex.CarriesSetDecoration(apparel))
+                {
+                    return true;
+                }
+            }
         }
 
-        foreach (var apparel in worn)
+        var equipment = ParentPawn?.equipment?.AllEquipmentListForReading;
+        if (equipment != null)
         {
-            if (ApparelSetIndex.IsPiece(apparel?.def))
+            foreach (var eq in equipment)
             {
-                return true;
+                if (ApparelSetIndex.IsPiece(eq?.def) || ApparelSetIndex.CarriesSetDecoration(eq))
+                {
+                    return true;
+                }
             }
         }
 
@@ -188,13 +198,21 @@ public class CompRankInfo : ThingComp
 
     public void Notify_ApparelChanged()
     {
+        Notify_GearChanged();
+    }
+
+    /// <summary>
+    /// Rebuilds the apparel set state after worn apparel, equipment or fitted decorations changed.
+    /// </summary>
+    public void Notify_GearChanged(bool notify = true)
+    {
         if (!ApparelSetIndex.AnySets)
         {
             return;
         }
 
         apparelSetsChecked = true;
-        ApparelSets.Notify_GearChanged(true);
+        ApparelSets.Notify_GearChanged(notify);
     }
 
     public override void PostSpawnSetup(bool respawningAfterLoad)

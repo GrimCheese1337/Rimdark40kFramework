@@ -294,6 +294,10 @@ public class CompDecorativeBase : CompGraphicParent
     
     protected virtual void OnDecorationsChanged()
     {
+        if (ApparelSetIndex.AnyDecorationPieces)
+        {
+            Pawn?.GetComp<CompRankInfo>()?.Notify_GearChanged(committingPending);
+        }
     }
 
     //Add
@@ -657,6 +661,7 @@ public class CompDecorativeBase : CompGraphicParent
     private List<DecorationDef> pendingUnlock = [];
     private bool pendingAppearance;
     private bool hasPendingChange;
+    private bool committingPending;
 
     private void ComputeDiff(out List<DecorationDef> added, out List<DecorationDef> removed, out bool appearanceChanged)
     {
@@ -840,7 +845,15 @@ public class CompDecorativeBase : CompGraphicParent
 
         ClearPending();
         SetOriginals();
-        OnDecorationsChanged();
+        committingPending = true;
+        try
+        {
+            OnDecorationsChanged();
+        }
+        finally
+        {
+            committingPending = false;
+        }
         Notify_GraphicChanged();
     }
 

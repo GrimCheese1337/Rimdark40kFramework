@@ -13,22 +13,22 @@ public static class IncreaseRangeFromVarious
             return;
         }
 
-        if (!WeaponVerbCompCache.TryGet(__instance.EquipmentSource, out var ammoChangerComp, out var weaponDecoComp, out var artifactComp))
+        if (WeaponVerbCompCache.TryGet(__instance.EquipmentSource, out var ammoChangerComp, out var weaponDecoComp, out var artifactComp))
         {
-            return;
+            if (ammoChangerComp != null)
+            {
+                __result = ammoChangerComp.EffectiveRangeOr(__result);
+            }
+            if (weaponDecoComp != null)
+            {
+                __result += weaponDecoComp.AdditionalRange;
+            }
+            if (artifactComp != null)
+            {
+                __result += artifactComp.AdditionalRange;
+            }
         }
 
-        if (ammoChangerComp != null)
-        {
-            __result = ammoChangerComp.EffectiveRangeOr(__result);
-        }
-        if (weaponDecoComp != null)
-        {
-            __result += weaponDecoComp.AdditionalRange;
-        }
-        if (artifactComp != null)
-        {
-            __result += artifactComp.AdditionalRange;
-        }
+        ApparelSetVerbUtility.ApplyRange(__instance, ref __result);
     }
 }

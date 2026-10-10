@@ -179,6 +179,13 @@ public class DecorationDef : Def
             stringbuilder.AppendLine("BEWH.Framework.Customization.ExtraApparelLayers".Translate(ApparelLayerConflictUtility.LayersLabel(extraApparelLayers)));
         }
 
+        var sets = ApparelSetIndex.SetsFor(this);
+        if (sets.Count != 0)
+        {
+            stringbuilder.AppendLine();
+            stringbuilder.AppendLine("BEWH.Framework.ApparelSet.PartOfSet".Translate(string.Join(", ", sets.Select(set => set.LabelCap.ToString()))));
+        }
+
         stringbuilder.AppendLine();
         stringbuilder.AppendLine("BEWH.Framework.Customization.WorkAmount".Translate(workAmount.ToString("F0"), RemovalWork.ToString("F0")));
 

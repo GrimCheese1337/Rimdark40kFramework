@@ -10,8 +10,8 @@ using AbilityDef = RimWorld.AbilityDef;
 namespace Core40k;
 
 /// <summary>
-/// Which apparel sets a pawn currently has active. Rebuilt from worn apparel whenever it changes and
-/// never saved; held by CompRankInfo.
+/// Which apparel sets a pawn currently has active. Rebuilt from worn apparel, equipped weapons and
+/// fitted decorations whenever they change and never saved; held by CompRankInfo.
 /// </summary>
 public class ApparelSetState
 {
@@ -20,10 +20,14 @@ public class ApparelSetState
     private bool dirty = true;
 
     private readonly HashSet<ThingDef> wornDefs = [];
+    private readonly HashSet<ThingDef> heldDefs = [];
+    private readonly HashSet<DecorationDef> fittedDecorations = [];
+    private readonly HashSet<SetWeaponPiece> matchedWeaponPieces = [];
     private readonly Dictionary<ApparelSetDef, int> counts = new();
     private readonly List<ApparelSetDef> activeSets = [];
-    private readonly List<SetBonusTier> activeTiers = [];
-    private readonly List<SetBonusTier> previousTiers = [];
+    private readonly List<ApparelSetTier> activeTiers = [];
+    private readonly List<ApparelSetTier> previousTiers = [];
+    private readonly Dictionary<ThingDef, VerbModifier> verbModifiers = new();
 
     private readonly Dictionary<StatDef, float> cachedStatOffset = new();
     private readonly Dictionary<StatDef, float> cachedStatFactor = new();
@@ -45,69 +49,217 @@ public class ApparelSetState
         }
 
         wornDefs.Clear();
+        heldDefs.Clear();
+        fittedDecorations.Clear();
+        matchedWeaponPieces.Clear();
         counts.Clear();
         activeSets.Clear();
         activeTiers.Clear();
+        verbModifiers.Clear();
 
-        var worn = Pawn?.apparel?.WornApparel;
+        var pawn = Pawn;
+        var worn = pawn?.apparel?.WornApparel;
         if (worn != null)
         {
             foreach (var apparel in worn)
             {
-                if (apparel?.def != null)
-                {
-                    wornDefs.Add(apparel.def);
-                }
-            }
-        }
-
-        foreach (var thingDef in wornDefs)
-        {
-            foreach (var set in ApparelSetIndex.SetsFor(thingDef))
-            {
-                if (counts.ContainsKey(set))
+                if (apparel?.def == null)
                 {
                     continue;
                 }
 
-                var count = set.CountIn(wornDefs);
-                counts[set] = count;
+                wornDefs.Add(apparel.def);
+                CollectDecorations(apparel);
+            }
+        }
 
-                SetBonusTier highest = null;
-                var anyTier = false;
-                foreach (var tier in set.tiers)
+        var equipment = pawn?.equipment?.AllEquipmentListForReading;
+        if (equipment != null)
+        {
+            foreach (var eq in equipment)
+            {
+                if (eq?.def == null)
                 {
-                    if (count < tier.requiredCount)
-                    {
-                        continue;
-                    }
-
-                    if (set.cumulativeTiers)
-                    {
-                        activeTiers.Add(tier);
-                        anyTier = true;
-                    }
-                    else
-                    {
-                        highest = tier;
-                    }
+                    continue;
                 }
 
-                if (highest != null)
+                heldDefs.Add(eq.def);
+                CollectDecorations(eq);
+            }
+        }
+
+        var candidates = new List<ApparelSetDef>();
+        foreach (var thingDef in wornDefs)
+        {
+            AddCandidates(candidates, ApparelSetIndex.SetsFor(thingDef));
+        }
+        foreach (var thingDef in heldDefs)
+        {
+            AddCandidates(candidates, ApparelSetIndex.SetsFor(thingDef));
+        }
+        foreach (var decoration in fittedDecorations)
+        {
+            AddCandidates(candidates, ApparelSetIndex.SetsFor(decoration));
+        }
+
+        foreach (var set in candidates)
+        {
+            var count = set.CountIn(wornDefs, heldDefs, fittedDecorations, out var weaponMatched);
+            counts[set] = count;
+
+            foreach (var weaponPiece in set.weaponPieces)
+            {
+                foreach (var thingDef in heldDefs)
                 {
-                    activeTiers.Add(highest);
+                    if (weaponPiece.Matches(thingDef))
+                    {
+                        matchedWeaponPieces.Add(weaponPiece);
+                        break;
+                    }
+                }
+            }
+
+            ApparelSetTier highest = null;
+            var anyTier = false;
+            foreach (var tier in set.tiers)
+            {
+                if (!TierRequirementsMet(tier, count, weaponMatched))
+                {
+                    continue;
+                }
+
+                if (set.cumulativeTiers)
+                {
+                    activeTiers.Add(tier);
                     anyTier = true;
                 }
-
-                if (anyTier)
+                else
                 {
-                    activeSets.Add(set);
+                    highest = tier;
                 }
+            }
+
+            if (highest != null)
+            {
+                activeTiers.Add(highest);
+                anyTier = true;
+            }
+
+            if (anyTier)
+            {
+                activeSets.Add(set);
             }
         }
 
         activeSets.SortBy(set => set.sortOrder);
+        BuildVerbModifiers();
         dirty = false;
+    }
+
+    private void CollectDecorations(ThingWithComps thing)
+    {
+        if (!ApparelSetIndex.AnyDecorationPieces)
+        {
+            return;
+        }
+
+        var comps = thing.AllComps;
+        for (var i = 0; i < comps.Count; i++)
+        {
+            if (comps[i] is not CompDecorativeBase decorative)
+            {
+                continue;
+            }
+
+            foreach (var decoration in decorative.Decorations.Keys)
+            {
+                if (ApparelSetIndex.IsSetDecoration(decoration))
+                {
+                    fittedDecorations.Add(decoration);
+                }
+            }
+        }
+    }
+
+    private static void AddCandidates(List<ApparelSetDef> candidates, List<ApparelSetDef> sets)
+    {
+        foreach (var set in sets)
+        {
+            if (!candidates.Contains(set))
+            {
+                candidates.Add(set);
+            }
+        }
+    }
+
+    private bool TierRequirementsMet(ApparelSetTier tier, int count, bool weaponMatched)
+    {
+        if (count < tier.requiredCount)
+        {
+            return false;
+        }
+
+        if (tier.requiresWeapon && !weaponMatched)
+        {
+            return false;
+        }
+
+        if (!tier.requiredDecorations.NullOrEmpty())
+        {
+            foreach (var decoration in tier.requiredDecorations)
+            {
+                if (decoration != null && !fittedDecorations.Contains(decoration))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    //Built eagerly for every equipped weapon so the verb getters only ever read.
+    private void BuildVerbModifiers()
+    {
+        if (activeTiers.Count == 0 || !ApparelSetIndex.AnyVerbModifiers)
+        {
+            return;
+        }
+
+        foreach (var weaponDef in heldDefs)
+        {
+            if (!ApparelSetIndex.HasVerbModifier(weaponDef))
+            {
+                continue;
+            }
+
+            VerbModifier sum = null;
+            foreach (var set in activeSets)
+            {
+                if (!set.MatchesWeapon(weaponDef))
+                {
+                    continue;
+                }
+
+                foreach (var tier in set.tiers)
+                {
+                    if (!tier.HasVerbModifier || !activeTiers.Contains(tier))
+                    {
+                        continue;
+                    }
+
+                    sum ??= new VerbModifier();
+                    sum.additionalBurstShotCount += tier.verbModifier.additionalBurstShotCount;
+                    sum.additionalRange += tier.verbModifier.additionalRange;
+                    sum.additionalWarmupTime += tier.verbModifier.additionalWarmupTime;
+                }
+            }
+
+            if (sum != null)
+            {
+                verbModifiers[weaponDef] = sum;
+            }
+        }
     }
 
     //Queries
@@ -142,17 +294,39 @@ public class ApparelSetState
         return thingDef != null && wornDefs.Contains(thingDef);
     }
 
-    public bool IsTierActive(SetBonusTier tier)
+    public bool IsWeaponPieceMatched(SetWeaponPiece weaponPiece)
+    {
+        EnsureCaches();
+        return weaponPiece != null && matchedWeaponPieces.Contains(weaponPiece);
+    }
+
+    public bool IsFitted(DecorationDef decorationDef)
+    {
+        EnsureCaches();
+        return decorationDef != null && fittedDecorations.Contains(decorationDef);
+    }
+
+    public bool IsTierActive(ApparelSetTier tier)
     {
         EnsureCaches();
         return tier != null && activeTiers.Contains(tier);
     }
 
+    /// <summary>
+    /// The summed verb modifier of every active tier whose set has a weapon piece matching this weapon, or
+    /// null when there is none.
+    /// </summary>
+    public VerbModifier VerbModifierFor(ThingDef weaponDef)
+    {
+        EnsureCaches();
+        return weaponDef != null && verbModifiers.TryGetValue(weaponDef, out var modifier) ? modifier : null;
+    }
+
     //Changes
 
     /// <summary>
-    /// Rebuilds the active sets from what is worn now, brings granted hediffs and abilities in line,
-    /// and optionally tells the player about tiers that just became active.
+    /// Rebuilds the active sets from what is worn and equipped now, brings granted hediffs and abilities
+    /// in line, and optionally tells the player about tiers that just became active.
     /// </summary>
     public void Notify_GearChanged(bool notify)
     {
@@ -186,7 +360,7 @@ public class ApparelSetState
 
         foreach (var set in activeSets)
         {
-            SetBonusTier gained = null;
+            ApparelSetTier gained = null;
             foreach (var tier in set.tiers)
             {
                 if (activeTiers.Contains(tier) && !previousTiers.Contains(tier))

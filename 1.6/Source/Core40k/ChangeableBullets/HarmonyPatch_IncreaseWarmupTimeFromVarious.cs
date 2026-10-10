@@ -13,22 +13,22 @@ public static class IncreaseWarmupTimeFromVarious
             return;
         }
 
-        if (!WeaponVerbCompCache.TryGet(__instance.EquipmentSource, out var ammoChangerComp, out var weaponDecoComp, out var artifactComp))
+        if (WeaponVerbCompCache.TryGet(__instance.EquipmentSource, out var ammoChangerComp, out var weaponDecoComp, out var artifactComp))
         {
-            return;
+            if (ammoChangerComp != null)
+            {
+                __result = ammoChangerComp.WarmupTimeOr(__result);
+            }
+            if (weaponDecoComp != null)
+            {
+                __result += weaponDecoComp.AdditionalWarmupTime;
+            }
+            if (artifactComp != null)
+            {
+                __result += artifactComp.AdditionalWarmupTime;
+            }
         }
 
-        if (ammoChangerComp != null)
-        {
-            __result = ammoChangerComp.WarmupTimeOr(__result);
-        }
-        if (weaponDecoComp != null)
-        {
-            __result += weaponDecoComp.AdditionalWarmupTime;
-        }
-        if (artifactComp != null)
-        {
-            __result += artifactComp.AdditionalWarmupTime;
-        }
+        ApparelSetVerbUtility.ApplyWarmup(__instance, ref __result);
     }
 }

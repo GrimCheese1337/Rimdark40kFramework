@@ -15,7 +15,46 @@ public static class HarmonyPatch_ApparelSetGearChanged
             return;
         }
 
-        __instance.pawn?.GetComp<CompRankInfo>()?.Notify_ApparelChanged();
+        __instance.pawn?.GetComp<CompRankInfo>()?.Notify_GearChanged();
+    }
+}
+
+[HarmonyPatch(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.Notify_EquipmentAdded))]
+public static class HarmonyPatch_ApparelSetEquipmentAdded
+{
+    public static void Postfix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
+    {
+        ApparelSetEquipmentUtility.Notify_EquipmentChanged(__instance.pawn, eq);
+    }
+}
+
+[HarmonyPatch(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.Notify_EquipmentRemoved))]
+public static class HarmonyPatch_ApparelSetEquipmentRemoved
+{
+    public static void Postfix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
+    {
+        ApparelSetEquipmentUtility.Notify_EquipmentChanged(__instance.pawn, eq);
+    }
+}
+
+public static class ApparelSetEquipmentUtility
+{
+    /// <summary>
+    /// Rebuilds the pawn's sets when the equipment that changed is a set weapon or carries a set decoration.
+    /// </summary>
+    public static void Notify_EquipmentChanged(Pawn pawn, ThingWithComps eq)
+    {
+        if (pawn == null || eq == null || !ApparelSetIndex.AnySets)
+        {
+            return;
+        }
+
+        if (!ApparelSetIndex.IsPiece(eq.def) && !ApparelSetIndex.CarriesSetDecoration(eq))
+        {
+            return;
+        }
+
+        pawn.GetComp<CompRankInfo>()?.Notify_GearChanged();
     }
 }
 
@@ -56,19 +95,25 @@ public static class HarmonyPatch_ApparelSetDisplayStats
             yield break;
         }
 
-        var wearer = (req.Thing as Apparel)?.Wearer;
-        var state = wearer?.GetComp<CompRankInfo>()?.ApparelSetsIfAny;
+        var owner = req.Thing?.ParentHolder switch
+        {
+            Pawn_ApparelTracker apparelTracker => apparelTracker.pawn,
+            Pawn_EquipmentTracker equipmentTracker => equipmentTracker.pawn,
+            _ => null,
+        };
+        var state = owner?.GetComp<CompRankInfo>()?.ApparelSetsIfAny;
+        var category = __instance.IsApparel ? StatCategoryDefOf.Apparel : StatCategoryDefOf.Weapon;
         foreach (var set in sets)
         {
-            yield return Entry(set, state, StatCategoryDefOf.Apparel);
+            yield return Entry(set, state, category);
         }
     }
 
     private static StatDrawEntry Entry(ApparelSetDef set, ApparelSetState state, StatCategoryDef category)
     {
         var value = state != null
-            ? state.CountOf(set) + "/" + set.pieces.Count
-            : "BEWH.Framework.GeneCustomization.TierPieces".Translate(set.pieces.Count).ToString();
+            ? state.CountOf(set) + "/" + set.TotalPieces
+            : "BEWH.Framework.GeneCustomization.TierPieces".Translate(set.TotalPieces).ToString();
 
         var hyperlinks = new List<Dialog_InfoCard.Hyperlink>();
         foreach (var piece in set.pieces)
@@ -76,6 +121,13 @@ public static class HarmonyPatch_ApparelSetDisplayStats
             if (piece != null)
             {
                 hyperlinks.Add(new Dialog_InfoCard.Hyperlink(piece));
+            }
+        }
+        foreach (var weaponPiece in set.weaponPieces)
+        {
+            foreach (var weapon in weaponPiece.resolved)
+            {
+                hyperlinks.Add(new Dialog_InfoCard.Hyperlink(weapon));
             }
         }
 

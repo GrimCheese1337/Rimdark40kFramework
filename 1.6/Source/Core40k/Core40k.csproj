@@ -385,8 +385,11 @@
     <Compile Include="SetBonus\ApparelSetDef.cs" />
     <Compile Include="SetBonus\ApparelSetIndex.cs" />
     <Compile Include="SetBonus\ApparelSetState.cs" />
+    <Compile Include="SetBonus\ApparelSetTier.cs" />
+    <Compile Include="SetBonus\ApparelSetVerbUtility.cs" />
     <Compile Include="SetBonus\HarmonyPatch_ApparelSets.cs" />
     <Compile Include="SetBonus\SetBonusTier.cs" />
+    <Compile Include="SetBonus\SetWeaponPiece.cs" />
     <Compile Include="Shields\ShieldZone.cs" />
     <Compile Include="Shields\CompProperties_PhysicalShield.cs" />
     <Compile Include="Shields\Comp_PhysicalShield.cs" />

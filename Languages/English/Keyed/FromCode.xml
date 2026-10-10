@@ -281,6 +281,11 @@
     <BEWH.Framework.ApparelSet.HighestTierOnly>Only the highest reached bonus applies.</BEWH.Framework.ApparelSet.HighestTierOnly>
     <BEWH.Framework.ApparelSet.Active>(active)</BEWH.Framework.ApparelSet.Active>
     <BEWH.Framework.ApparelSet.TierGained>{0} has gained the {1} set bonus ({2}).</BEWH.Framework.ApparelSet.TierGained>
+    <BEWH.Framework.ApparelSet.WeaponMembers>Weapons:</BEWH.Framework.ApparelSet.WeaponMembers>
+    <BEWH.Framework.ApparelSet.DecorationMembers>Decorations:</BEWH.Framework.ApparelSet.DecorationMembers>
+    <BEWH.Framework.ApparelSet.RequiresWeapon>Requires a set weapon</BEWH.Framework.ApparelSet.RequiresWeapon>
+    <BEWH.Framework.ApparelSet.RequiresDecorations>Requires: {0}</BEWH.Framework.ApparelSet.RequiresDecorations>
+    <BEWH.Framework.ApparelSet.PartOfSet>Part of set: {0}</BEWH.Framework.ApparelSet.PartOfSet>
 
     <!-- Shields -->
     <BEWH.Framework.Shield.Blocked>Blocked</BEWH.Framework.Shield.Blocked>

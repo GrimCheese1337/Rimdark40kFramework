@@ -13,22 +13,22 @@ public static class IncreaseShotBurstCountFromVarious
             return;
         }
 
-        if (!WeaponVerbCompCache.TryGet(__instance.EquipmentSource, out var ammoChangerComp, out var weaponDecoComp, out var artifactComp))
+        if (WeaponVerbCompCache.TryGet(__instance.EquipmentSource, out var ammoChangerComp, out var weaponDecoComp, out var artifactComp))
         {
-            return;
+            if (ammoChangerComp != null)
+            {
+                __result = ammoChangerComp.ShotsPerBurstOr(__result);
+            }
+            if (weaponDecoComp != null)
+            {
+                __result += weaponDecoComp.AdditionalBurstShotCount;
+            }
+            if (artifactComp != null)
+            {
+                __result += artifactComp.AdditionalBurstShotCount;
+            }
         }
 
-        if (ammoChangerComp != null)
-        {
-            __result = ammoChangerComp.ShotsPerBurstOr(__result);
-        }
-        if (weaponDecoComp != null)
-        {
-            __result += weaponDecoComp.AdditionalBurstShotCount;
-        }
-        if (artifactComp != null)
-        {
-            __result += artifactComp.AdditionalBurstShotCount;
-        }
+        ApparelSetVerbUtility.ApplyBurst(__instance, ref __result);
     }
 }
