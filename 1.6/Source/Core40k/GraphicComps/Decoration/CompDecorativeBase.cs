@@ -407,7 +407,7 @@ public class CompDecorativeBase : CompGraphicParent
             {
                 continue;
             }
-            if (def == null || !def.MeetsRequirements(pawn))
+            if (def == null || !def.MeetsPawnRequirements(pawn))
             {
                 toRemove ??= [];
                 toRemove.Add(def);
@@ -522,6 +522,20 @@ public class CompDecorativeBase : CompGraphicParent
     
     public virtual void LoadFromPreset(DecorationPreset preset, bool free = false)
     {
+        LoadFromPresetInternal(preset, null, null, free);
+    }
+
+    /// <summary>
+    /// Loads the preset, skipping any decoration the pawn does not meet the requirements for.
+    /// Skipped decorations are added to skipped.
+    /// </summary>
+    public void LoadFromPreset(DecorationPreset preset, Pawn pawn, List<DecorationDef> skipped)
+    {
+        LoadFromPresetInternal(preset, pawn, skipped, false);
+    }
+
+    private void LoadFromPresetInternal(DecorationPreset preset, Pawn pawn, List<DecorationDef> skipped, bool free)
+    {
         foreach (var presetPart in preset.decorationPresetParts)
         {
             var decoDef = Core40kUtils.GetDecoDefFromString(presetPart.extraDecorationDefs);
@@ -529,6 +543,11 @@ public class CompDecorativeBase : CompGraphicParent
             //keying the dictionary with null.
             if (decoDef == null || !decoDef.showInDecorationTab || decorations.ContainsKey(decoDef))
             {
+                continue;
+            }
+            if (skipped != null && !decoDef.MeetsRequirements(pawn))
+            {
+                skipped.Add(decoDef);
                 continue;
             }
             var extraDecorationsSetting = new DecorationSettings()
@@ -545,10 +564,29 @@ public class CompDecorativeBase : CompGraphicParent
     }
     public void LoadFromPreset(DecorationPresetDef preset, bool free = false)
     {
+        LoadFromPresetInternal(preset, null, null, free);
+    }
+
+    /// <summary>
+    /// Loads the preset, skipping any decoration the pawn does not meet the requirements for.
+    /// Skipped decorations are added to skipped.
+    /// </summary>
+    public void LoadFromPreset(DecorationPresetDef preset, Pawn pawn, List<DecorationDef> skipped)
+    {
+        LoadFromPresetInternal(preset, pawn, skipped, false);
+    }
+
+    private void LoadFromPresetInternal(DecorationPresetDef preset, Pawn pawn, List<DecorationDef> skipped, bool free)
+    {
         foreach (var presetPart in preset.presetData)
         {
             if (presetPart.decorationDef == null || decorations.ContainsKey(presetPart.decorationDef))
             {
+                continue;
+            }
+            if (skipped != null && !presetPart.decorationDef.MeetsRequirements(pawn))
+            {
+                skipped.Add(presetPart.decorationDef);
                 continue;
             }
             var multiColComp = parent.GetComp<CompMultiColor>();

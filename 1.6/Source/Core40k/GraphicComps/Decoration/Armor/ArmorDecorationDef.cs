@@ -45,9 +45,9 @@ public class ExtraDecorationDef : DecorationDef
     
     public List<BodyTypeDef> appliesToBodyTypes = [];
 
-    public override bool MeetsRequirements(Pawn pawn)
+    public override bool MeetsPawnRequirements(Pawn pawn)
     {
-        if (!base.MeetsRequirements(pawn))
+        if (!base.MeetsPawnRequirements(pawn))
         {
             return false;
         }

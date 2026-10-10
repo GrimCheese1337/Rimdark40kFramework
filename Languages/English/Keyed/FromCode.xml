@@ -134,6 +134,18 @@
   <BEWH.Framework.Customization.AdditionalLayers>Additional layers</BEWH.Framework.Customization.AdditionalLayers>
   <BEWH.Framework.Customization.AdditionalLayersDesc>Apparel layers this item also occupies because of its fitted decorations. Apparel on these layers covering the same body parts cannot be worn with it.</BEWH.Framework.Customization.AdditionalLayersDesc>
   <BEWH.Framework.Customization.WillRemoveApparel>Fitting this will take off: {0}</BEWH.Framework.Customization.WillRemoveApparel>
+  <BEWH.Framework.Customization.PresetSkippedUnavailable>Some decorations in this preset are not available: {0}</BEWH.Framework.Customization.PresetSkippedUnavailable>
+  <BEWH.Framework.Customization.InfoCard.RequiredResearch>Required research</BEWH.Framework.Customization.InfoCard.RequiredResearch>
+  <BEWH.Framework.Customization.InfoCard.RequiredResearchDesc>Research the colony must finish before this can be fitted. Gear that already has it fitted keeps it.</BEWH.Framework.Customization.InfoCard.RequiredResearchDesc>
+  <BEWH.Framework.Customization.InfoCard.AppliesTo>Applies to</BEWH.Framework.Customization.InfoCard.AppliesTo>
+  <BEWH.Framework.Customization.InfoCard.AppliesToAll>Any decoratable item</BEWH.Framework.Customization.InfoCard.AppliesToAll>
+  <BEWH.Framework.Customization.InfoCard.AppliesToDesc>The items this can be fitted to.</BEWH.Framework.Customization.InfoCard.AppliesToDesc>
+  <BEWH.Framework.Customization.InfoCard.ItemCount>{0} items</BEWH.Framework.Customization.InfoCard.ItemCount>
+  <BEWH.Framework.Customization.InfoCard.CostDesc>Materials used the first time this is fitted to an item. Refitting it to the same item is free.</BEWH.Framework.Customization.InfoCard.CostDesc>
+  <BEWH.Framework.Customization.InfoCard.WorkToFit>Work to fit</BEWH.Framework.Customization.InfoCard.WorkToFit>
+  <BEWH.Framework.Customization.InfoCard.WorkToFitDesc>The amount of work needed to fit this at a styling station.</BEWH.Framework.Customization.InfoCard.WorkToFitDesc>
+  <BEWH.Framework.Customization.InfoCard.WorkToRemove>Work to remove</BEWH.Framework.Customization.InfoCard.WorkToRemove>
+  <BEWH.Framework.Customization.InfoCard.WorkToRemoveDesc>The amount of work needed to remove this at a styling station.</BEWH.Framework.Customization.InfoCard.WorkToRemoveDesc>
   <BEWH.Framework.Customization.WouldReplaceLockedApparel>Would take off locked apparel: {0}</BEWH.Framework.Customization.WouldReplaceLockedApparel>
   <BEWH.Framework.Customization.ConfirmCostOnly>Applying these changes will cost:\n{0}</BEWH.Framework.Customization.ConfirmCostOnly>
   <BEWH.Framework.Customization.ConfirmWork>Applying these changes will cost:\n{0}\n\nand take {1} work at the station.</BEWH.Framework.Customization.ConfirmWork>

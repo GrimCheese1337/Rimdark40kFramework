@@ -192,18 +192,164 @@ public class DecorationDef : Def
         return stringbuilder.ToString();
     }
     
+    public bool ResearchFinished
+    {
+        get
+        {
+            if (mustHaveResearch == null)
+            {
+                return true;
+            }
+            for (var i = 0; i < mustHaveResearch.Count; i++)
+            {
+                var project = mustHaveResearch[i];
+                if (project != null && !project.IsFinished)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
     /// <summary>
-    /// The same checks as HasRequirements without building the reason text. Use this wherever the
-    /// reason is discarded, such as validating fitted decorations on equip.
+    /// Rank, gene, trait and hediff requirements only, without building the reason text. Used to validate
+    /// fitted decorations on equip; research is left out as it only gates fitting a decoration.
+    /// </summary>
+    public virtual bool MeetsPawnRequirements(Pawn pawn)
+    {
+        return RequirementUtility.MeetsRequirements(pawn, mustHaveRank, mustHaveGene, mustHaveTrait, mustHaveHediff, null, mustHaveGeneOneAmong);
+    }
+
+    /// <summary>
+    /// The same checks as HasRequirements without building the reason text.
     /// </summary>
     public virtual bool MeetsRequirements(Pawn pawn)
     {
-        return RequirementUtility.MeetsRequirements(pawn, mustHaveRank, mustHaveGene, mustHaveTrait, mustHaveHediff, mustHaveResearch, mustHaveGeneOneAmong);
+        return ResearchFinished && MeetsPawnRequirements(pawn);
     }
 
     public virtual bool HasRequirements(Pawn pawn, out string lockedReason)
     {
-        return RequirementUtility.HasRequirements(pawn, mustHaveRank, mustHaveGene, mustHaveTrait, mustHaveHediff, mustHaveResearch, out lockedReason, mustHaveGeneOneAmong);
+        var requirementFulfilled = RequirementUtility.HasRequirements(pawn, mustHaveRank, mustHaveGene, mustHaveTrait, mustHaveHediff, null, out lockedReason, mustHaveGeneOneAmong);
+        if (ResearchFinished)
+        {
+            return requirementFulfilled;
+        }
+
+        var missingResearch = mustHaveResearch.Where(project => project != null && !project.IsFinished).Select(project => project.label.CapitalizeFirst());
+        var reason = new StringBuilder(lockedReason);
+        reason.AppendLine("BEWH.Framework.Common.MissingResearch".Translate(missingResearch.ToCommaList()));
+        lockedReason = reason.ToString();
+        return false;
+    }
+
+    public override IEnumerable<StatDrawEntry> SpecialDisplayStats(StatRequest req)
+    {
+        foreach (var entry in base.SpecialDisplayStats(req))
+        {
+            yield return entry;
+        }
+
+        var basics = StatCategoryDefOf.Basics;
+
+        var research = mustHaveResearch?.Where(project => project != null).ToList();
+        if (!research.NullOrEmpty())
+        {
+            yield return new StatDrawEntry(basics,
+                "BEWH.Framework.Customization.InfoCard.RequiredResearch".Translate(),
+                research.Select(project => project.LabelCap.ToString()).ToCommaList(),
+                "BEWH.Framework.Customization.InfoCard.RequiredResearchDesc".Translate(),
+                4100,
+                hyperlinks: research.Select(project => new Dialog_InfoCard.Hyperlink(project)));
+        }
+
+        if (appliesToAll)
+        {
+            yield return new StatDrawEntry(basics,
+                "BEWH.Framework.Customization.InfoCard.AppliesTo".Translate(),
+                "BEWH.Framework.Customization.InfoCard.AppliesToAll".Translate(),
+                "BEWH.Framework.Customization.InfoCard.AppliesToDesc".Translate(),
+                4000);
+        }
+        else
+        {
+            var things = appliesTo.Select(DefDatabase<ThingDef>.GetNamedSilentFail).Where(thingDef => thingDef != null).ToList();
+            if (things.Count > 0)
+            {
+                var thingList = things.Select(thingDef => thingDef.LabelCap.ToString()).ToCommaList();
+                yield return new StatDrawEntry(basics,
+                    "BEWH.Framework.Customization.InfoCard.AppliesTo".Translate(),
+                    things.Count == 1 ? thingList : "BEWH.Framework.Customization.InfoCard.ItemCount".Translate(things.Count).ToString(),
+                    "BEWH.Framework.Customization.InfoCard.AppliesToDesc".Translate() + "\n\n" + thingList,
+                    4000,
+                    hyperlinks: things.Select(thingDef => new Dialog_InfoCard.Hyperlink(thingDef)));
+            }
+        }
+
+        if (HasCost && DecorationWorkUtility.CostEnabled)
+        {
+            var costs = cost.Where(thingCount => thingCount.thingDef != null).ToList();
+            yield return new StatDrawEntry(basics,
+                "BEWH.Framework.Customization.Cost".Translate(),
+                costs.Select(thingCount => thingCount.thingDef.LabelCap.ToString() + " x" + thingCount.count).ToCommaList(),
+                "BEWH.Framework.Customization.InfoCard.CostDesc".Translate(),
+                3900,
+                hyperlinks: costs.Select(thingCount => new Dialog_InfoCard.Hyperlink(thingCount.thingDef)));
+        }
+
+        if (DecorationWorkUtility.WorkEnabled)
+        {
+            yield return new StatDrawEntry(basics,
+                "BEWH.Framework.Customization.InfoCard.WorkToFit".Translate(),
+                workAmount.ToString("F0"),
+                "BEWH.Framework.Customization.InfoCard.WorkToFitDesc".Translate(),
+                3800);
+            yield return new StatDrawEntry(basics,
+                "BEWH.Framework.Customization.InfoCard.WorkToRemove".Translate(),
+                RemovalWork.ToString("F0"),
+                "BEWH.Framework.Customization.InfoCard.WorkToRemoveDesc".Translate(),
+                3790);
+        }
+
+        var priority = 3000;
+        foreach (var entry in ModifierEntries(statOffsets, basics, false, priority))
+        {
+            yield return entry;
+        }
+        foreach (var entry in ModifierEntries(statFactors, basics, true, priority - 100))
+        {
+            yield return entry;
+        }
+        foreach (var entry in ModifierEntries(pawnStatOffsets, StatCategoryDefOf.EquippedStatOffsets, false, priority))
+        {
+            yield return entry;
+        }
+        foreach (var entry in ModifierEntries(pawnStatFactors, StatCategoryDefOf.EquippedStatOffsets, true, priority - 100))
+        {
+            yield return entry;
+        }
+    }
+
+    private static IEnumerable<StatDrawEntry> ModifierEntries(List<StatModifier> modifiers, StatCategoryDef category, bool factor, int priority)
+    {
+        if (modifiers.NullOrEmpty())
+        {
+            yield break;
+        }
+        for (var i = 0; i < modifiers.Count; i++)
+        {
+            var modifier = modifiers[i];
+            if (modifier?.stat == null)
+            {
+                continue;
+            }
+            yield return new StatDrawEntry(category,
+                modifier.stat.LabelCap,
+                (factor ? "x" : "") + modifier.ValueToStringAsOffset,
+                modifier.stat.description,
+                priority - i);
+        }
     }
     
     public override IEnumerable<string> ConfigErrors()

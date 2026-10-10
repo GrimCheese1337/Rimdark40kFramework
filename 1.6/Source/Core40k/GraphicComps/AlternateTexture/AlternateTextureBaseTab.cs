@@ -130,13 +130,21 @@ public class AlternateTextureBaseTab : CustomizerTabDrawer
                     {
                         tipTooltip += "\n" + "BEWH.Framework.Customization.IncompatibleWithLockedDecoration".Translate(lockReason);
                     }
-                    GUI.color = blockedByLock ? Color.gray : Mouse.IsOver(iconRect) ? GenUI.MouseoverColor : Color.white;
+                    var alternate = alternateByType.Value[i];
+                    var requirementsMissing = !alternateFormSelected && alternate != null && !alternate.MeetsRequirements(pawn);
+                    if (requirementsMissing)
+                    {
+                        alternate.HasRequirements(pawn, out var requirementReason);
+                        tipTooltip += "\n" + "BEWH.Framework.Customization.RequirementNotMet".Translate() + requirementReason;
+                    }
+                    var blocked = blockedByLock || requirementsMissing;
+                    GUI.color = blocked ? Color.gray : Mouse.IsOver(iconRect) ? GenUI.MouseoverColor : Color.white;
                     GUI.DrawTexture(iconRect, Command.BGTexShrunk);
                     GUI.color = Color.white;
                     GUI.DrawTexture(iconRect, alternateByType.Value[i]?.Icon ?? alternateComp.parent.def.uiIcon);
                     TooltipHandler.TipRegion(iconRect, tipTooltip);
 
-                    if (!blockedByLock && Widgets.ButtonInvisible(iconRect))
+                    if (!blocked && Widgets.ButtonInvisible(iconRect))
                     {
                         alternateComp.SetAlternateBaseForm(alternateByType.Value[i], alternateComp.parent is Apparel);
                     }

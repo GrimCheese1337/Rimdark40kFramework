@@ -127,6 +127,17 @@ public class DecorationBaseTab : CustomizerTabDrawer
 
     protected virtual void SetupHook() { }
 
+    private static void NotifySkippedPresetDecorations(List<DecorationDef> skipped)
+    {
+        if (skipped.NullOrEmpty())
+        {
+            return;
+        }
+
+        var labels = skipped.Select(def => def.LabelCap.ToString()).ToCommaList(useAnd: true);
+        Messages.Message("BEWH.Framework.Customization.PresetSkippedUnavailable".Translate(labels).Resolve(), MessageTypeDefOf.RejectInput, false);
+    }
+
     protected virtual void SelectPresetButton(CompDecorativeBase decorativeComp)
     {
         var floatMenuOptions = new List<FloatMenuOption>();
@@ -138,7 +149,9 @@ public class DecorationBaseTab : CustomizerTabDrawer
             var menuOption = new FloatMenuOption(preset.name, delegate
             {
                 decorativeComp.RemoveAllDecorations();
-                decorativeComp.LoadFromPreset(preset);
+                var skipped = new List<DecorationDef>();
+                decorativeComp.LoadFromPreset(preset, selPawn, skipped);
+                NotifySkippedPresetDecorations(skipped);
             });
             floatMenuOptions.Add(menuOption);
         }
@@ -148,7 +161,9 @@ public class DecorationBaseTab : CustomizerTabDrawer
             var menuOption = new FloatMenuOption(weaponDecorationPresetDef.label, delegate
             {
                 decorativeComp.RemoveAllDecorations();
-                decorativeComp.LoadFromPreset(weaponDecorationPresetDef);
+                var skipped = new List<DecorationDef>();
+                decorativeComp.LoadFromPreset(weaponDecorationPresetDef, selPawn, skipped);
+                NotifySkippedPresetDecorations(skipped);
             });
             floatMenuOptions.Add(menuOption);
         }
