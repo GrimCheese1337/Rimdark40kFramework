@@ -1321,6 +1321,14 @@ public class CompDecorativeBase : CompGraphicParent
             {
                 report.AppendLine("    " + hediff.LabelCap);
             }
+            foreach (var ability in decoration.givesAbilities)
+            {
+                report.AppendLine("    " + ability.LabelCap);
+            }
+            foreach (var ability in decoration.givesVFEAbilities)
+            {
+                report.AppendLine("    " + ability.LabelCap);
+            }
             foreach (var customEffect in decoration.customEffectDescriptions)
             {
                 report.AppendLine("    " + customEffect.CapitalizeFirst());

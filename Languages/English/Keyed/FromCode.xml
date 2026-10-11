@@ -131,6 +131,10 @@
   <BEWH.Framework.Customization.FittedDecorations>Decorations fitted</BEWH.Framework.Customization.FittedDecorations>
   <BEWH.Framework.Customization.FittedUpgrades>Upgrades fitted</BEWH.Framework.Customization.FittedUpgrades>
   <BEWH.Framework.Customization.ExtraApparelLayers>Also occupies apparel layer: {0}</BEWH.Framework.Customization.ExtraApparelLayers>
+  <BEWH.Framework.Customization.Grants>Grants:</BEWH.Framework.Customization.Grants>
+  <BEWH.Framework.Customization.GrantsLabel>Grants</BEWH.Framework.Customization.GrantsLabel>
+  <BEWH.Framework.Customization.GrantsCount>{0} granted</BEWH.Framework.Customization.GrantsCount>
+  <BEWH.Framework.Customization.GrantsDesc>Abilities and conditions given to the wearer or wielder while the item is equipped.</BEWH.Framework.Customization.GrantsDesc>
   <BEWH.Framework.Customization.OtherEffects>Other effects</BEWH.Framework.Customization.OtherEffects>
   <BEWH.Framework.Customization.OtherEffectsCount>{0} effects</BEWH.Framework.Customization.OtherEffectsCount>
   <BEWH.Framework.Customization.AdditionalLayers>Additional layers</BEWH.Framework.Customization.AdditionalLayers>

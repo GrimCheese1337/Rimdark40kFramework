@@ -127,6 +127,43 @@ public class DecorationDef : Def
 
     public float RemovalWork => workAmount * removalWorkFactor;
 
+    /// <summary>
+    /// Abilities (vanilla, then VFE) and hediffs this decoration gives while the item is equipped.
+    /// </summary>
+    public IEnumerable<Def> GrantedDefs()
+    {
+        if (givesAbilities != null)
+        {
+            foreach (var ability in givesAbilities)
+            {
+                if (ability != null)
+                {
+                    yield return ability;
+                }
+            }
+        }
+        if (givesVFEAbilities != null)
+        {
+            foreach (var ability in givesVFEAbilities)
+            {
+                if (ability != null)
+                {
+                    yield return ability;
+                }
+            }
+        }
+        if (givesHediffs != null)
+        {
+            foreach (var hediff in givesHediffs)
+            {
+                if (hediff != null)
+                {
+                    yield return hediff;
+                }
+            }
+        }
+    }
+
     public virtual string TooltipDescription()
     {
         var stringbuilder = new StringBuilder();
@@ -157,6 +194,17 @@ public class DecorationDef : Def
             foreach (var statFactor in pawnStatFactors)
             {
                 stringbuilder.AppendLine(statFactor.stat.label.CapitalizeFirst() + ": " + statFactor.ToStringAsFactor);
+            }
+        }
+
+        var granted = GrantedDefs().ToList();
+        if (granted.Count != 0)
+        {
+            stringbuilder.AppendLine();
+            stringbuilder.AppendLine("BEWH.Framework.Customization.Grants".Translate());
+            foreach (var grantedDef in granted)
+            {
+                stringbuilder.AppendLine(grantedDef.LabelCap);
             }
         }
 
@@ -341,6 +389,29 @@ public class DecorationDef : Def
         foreach (var entry in ModifierEntries(pawnStatFactors, StatCategoryDefOf.EquippedStatOffsets, true, priority - 100))
         {
             yield return entry;
+        }
+
+        var grantedDefs = GrantedDefs().ToList();
+        if (grantedDefs.Count != 0)
+        {
+            var grantsDesc = new StringBuilder("BEWH.Framework.Customization.GrantsDesc".Translate().Resolve());
+            foreach (var grantedDef in grantedDefs)
+            {
+                grantsDesc.AppendLine();
+                grantsDesc.AppendLine();
+                grantsDesc.Append(grantedDef.LabelCap.Resolve());
+                if (!grantedDef.description.NullOrEmpty())
+                {
+                    grantsDesc.AppendLine();
+                    grantsDesc.Append(grantedDef.description);
+                }
+            }
+            yield return new StatDrawEntry(StatCategoryDefOf.EquippedStatOffsets,
+                "BEWH.Framework.Customization.GrantsLabel".Translate(),
+                grantedDefs.Count == 1 ? grantedDefs[0].LabelCap.ToString() : "BEWH.Framework.Customization.GrantsCount".Translate(grantedDefs.Count).ToString(),
+                grantsDesc.ToString(),
+                priority - 150,
+                hyperlinks: grantedDefs.Select(grantedDef => new Dialog_InfoCard.Hyperlink(grantedDef)));
         }
 
         var customEffects = customEffectDescriptions?.Where(text => !text.NullOrEmpty()).Select(text => text.CapitalizeFirst()).ToList();
