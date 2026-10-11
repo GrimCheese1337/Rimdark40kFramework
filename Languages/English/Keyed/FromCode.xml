@@ -131,6 +131,8 @@
   <BEWH.Framework.Customization.FittedDecorations>Decorations fitted</BEWH.Framework.Customization.FittedDecorations>
   <BEWH.Framework.Customization.FittedUpgrades>Upgrades fitted</BEWH.Framework.Customization.FittedUpgrades>
   <BEWH.Framework.Customization.ExtraApparelLayers>Also occupies apparel layer: {0}</BEWH.Framework.Customization.ExtraApparelLayers>
+  <BEWH.Framework.Customization.OtherEffects>Other effects</BEWH.Framework.Customization.OtherEffects>
+  <BEWH.Framework.Customization.OtherEffectsCount>{0} effects</BEWH.Framework.Customization.OtherEffectsCount>
   <BEWH.Framework.Customization.AdditionalLayers>Additional layers</BEWH.Framework.Customization.AdditionalLayers>
   <BEWH.Framework.Customization.AdditionalLayersDesc>Apparel layers this item also occupies because of its fitted decorations. Apparel on these layers covering the same body parts cannot be worn with it.</BEWH.Framework.Customization.AdditionalLayersDesc>
   <BEWH.Framework.Customization.WillRemoveApparel>Fitting this will take off: {0}</BEWH.Framework.Customization.WillRemoveApparel>

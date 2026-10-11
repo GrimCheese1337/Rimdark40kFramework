@@ -83,6 +83,8 @@ public class DecorationDef : Def
     //Offsets and factors on the wearer's stats, applied by GetValueUnfinalizedFromVariousFactorPatch.
     public List<StatModifier> pawnStatOffsets = [];
     public List<StatModifier> pawnStatFactors = [];
+
+    public List<string> customEffectDescriptions = [];
     
     public List<AbilityDef> givesAbilities = [];
     public List<VEF.Abilities.AbilityDef> givesVFEAbilities = [];
@@ -116,7 +118,8 @@ public class DecorationDef : Def
         || !pawnStatFactors.NullOrEmpty()
         || !givesAbilities.NullOrEmpty()
         || !givesVFEAbilities.NullOrEmpty()
-        || !givesHediffs.NullOrEmpty();
+        || !givesHediffs.NullOrEmpty()
+        || !customEffectDescriptions.NullOrEmpty();
 
     public bool HasCost => !cost.NullOrEmpty();
     
@@ -149,11 +152,21 @@ public class DecorationDef : Def
             stringbuilder.AppendLine("BEWH.Framework.CommonKeyword.StatFactor".Translate());
             foreach (var statFactor in statFactors)
             {
-                stringbuilder.AppendLine(statFactor.stat.label.CapitalizeFirst() + ": x" + statFactor.ValueToStringAsOffset);
+                stringbuilder.AppendLine(statFactor.stat.label.CapitalizeFirst() + ": " + statFactor.ToStringAsFactor);
             }
             foreach (var statFactor in pawnStatFactors)
             {
-                stringbuilder.AppendLine(statFactor.stat.label.CapitalizeFirst() + ": x" + statFactor.ValueToStringAsOffset);
+                stringbuilder.AppendLine(statFactor.stat.label.CapitalizeFirst() + ": " + statFactor.ToStringAsFactor);
+            }
+        }
+
+        if (!customEffectDescriptions.NullOrEmpty())
+        {
+            stringbuilder.AppendLine();
+            stringbuilder.AppendLine("BEWH.Framework.Customization.OtherEffects".Translate());
+            foreach (var customEffect in customEffectDescriptions)
+            {
+                stringbuilder.AppendLine(customEffect.CapitalizeFirst());
             }
         }
 
@@ -329,6 +342,16 @@ public class DecorationDef : Def
         {
             yield return entry;
         }
+
+        var customEffects = customEffectDescriptions?.Where(text => !text.NullOrEmpty()).Select(text => text.CapitalizeFirst()).ToList();
+        if (!customEffects.NullOrEmpty())
+        {
+            yield return new StatDrawEntry(basics,
+                "BEWH.Framework.Customization.OtherEffects".Translate(),
+                customEffects.Count == 1 ? customEffects[0] : "BEWH.Framework.Customization.OtherEffectsCount".Translate(customEffects.Count).ToString(),
+                string.Join("\n", customEffects),
+                priority - 200);
+        }
     }
 
     private static IEnumerable<StatDrawEntry> ModifierEntries(List<StatModifier> modifiers, StatCategoryDef category, bool factor, int priority)
@@ -346,7 +369,7 @@ public class DecorationDef : Def
             }
             yield return new StatDrawEntry(category,
                 modifier.stat.LabelCap,
-                (factor ? "x" : "") + modifier.ValueToStringAsOffset,
+                factor ? modifier.ToStringAsFactor : modifier.ValueToStringAsOffset,
                 modifier.stat.description,
                 priority - i);
         }

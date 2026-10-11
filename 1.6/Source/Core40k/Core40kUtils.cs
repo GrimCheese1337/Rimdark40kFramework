@@ -276,13 +276,21 @@ public static class Core40kUtils
             return;
         }
         
+        var changed = false;
         if (pawnModExtension.extraDecorationPreset.TryGetValue(thing.def, out var preset))
         {
             decoComp.LoadFromPreset(preset, free: true);
+            changed = true;
         }
         if (pawnModExtension.extraDecorations.TryGetValue(thing.def, out var decos))
         {
             decoComp.ApplyDecorationsFromList([..decos], free: true);
+            changed = true;
+        }
+
+        if (changed)
+        {
+            decoComp.SetOriginals();
         }
     }
     
@@ -312,12 +320,8 @@ public static class Core40kUtils
         }
 
         var finalSelection = ResolveColorSelection(pawn, out var pawnModExtension);
-        if (finalSelection == null)
-        {
-            return;
-        }
 
-        if (setupMultiColor)
+        if (setupMultiColor && finalSelection != null)
         {
             SetupMultiColorCustomization(thing, finalSelection, pawn);
         }
@@ -333,7 +337,7 @@ public static class Core40kUtils
         var finalSelection = ResolveColorSelection(pawn, out var pawnModExtension);
         if (finalSelection == null)
         {
-            return;
+            setupMultiColor = false;
         }
         
         if (pawn.apparel?.WornApparel != null)

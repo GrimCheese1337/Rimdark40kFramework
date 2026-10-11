@@ -1311,15 +1311,19 @@ public class CompDecorativeBase : CompGraphicParent
             }
             foreach (var statFactor in decoration.statFactors)
             {
-                report.AppendLine("    " + statFactor.stat.LabelCap + ": x" + statFactor.ValueToStringAsOffset);
+                report.AppendLine("    " + statFactor.stat.LabelCap + ": " + statFactor.ToStringAsFactor);
             }
             foreach (var statFactor in decoration.pawnStatFactors)
             {
-                report.AppendLine("    " + statFactor.stat.LabelCap + ": x" + statFactor.ValueToStringAsOffset);
+                report.AppendLine("    " + statFactor.stat.LabelCap + ": " + statFactor.ToStringAsFactor);
             }
             foreach (var hediff in decoration.givesHediffs)
             {
                 report.AppendLine("    " + hediff.LabelCap);
+            }
+            foreach (var customEffect in decoration.customEffectDescriptions)
+            {
+                report.AppendLine("    " + customEffect.CapitalizeFirst());
             }
 
             report.AppendLine();
