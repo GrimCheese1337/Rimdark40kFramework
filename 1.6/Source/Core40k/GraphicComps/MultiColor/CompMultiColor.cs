@@ -303,6 +303,11 @@ public class CompMultiColor : CompGraphicParent
     
     public override void Notify_Equipped(Pawn pawn)
     {
+        if (!InitialSet)
+        {
+            InitialSetup();
+        }
+
         if (!pawnKindDefSetupDone)
         {
             pawnKindDefSetupDone = true;
