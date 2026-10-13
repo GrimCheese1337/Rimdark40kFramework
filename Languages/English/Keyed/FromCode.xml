@@ -22,6 +22,8 @@
   <BEWH.Framework.ModSettings.NotifyGeneVariantAvailability>Show a message when a new gene variant becomes available to a pawn</BEWH.Framework.ModSettings.NotifyGeneVariantAvailability>
   <BEWH.Framework.ModSettings.AlwaysShowShields>Always show worn shields</BEWH.Framework.ModSettings.AlwaysShowShields>
   <BEWH.Framework.ModSettings.AlwaysShowShieldsTooltip>When off, worn shields are only drawn while the wearer is drafted, fighting or was recently attacked.</BEWH.Framework.ModSettings.AlwaysShowShieldsTooltip>
+  <BEWH.Framework.ModSettings.RepairCostFactor>Repair cost: {0} of crafting cost for a full repair</BEWH.Framework.ModSettings.RepairCostFactor>
+  <BEWH.Framework.ModSettings.RepairCostFactorTooltip>How much of an item's crafting materials the repair station uses to restore it from no hit points to full. Repairs cost proportionally less the less damaged the item is.\n\nAt 0%, repairs are free.\n\nDefault: 50%</BEWH.Framework.ModSettings.RepairCostFactorTooltip>
 
   <BEWH.ModSettings.TabMain>Main</BEWH.ModSettings.TabMain>
   <BEWH.ModSettings.TabCustomization>Customization</BEWH.ModSettings.TabCustomization>
