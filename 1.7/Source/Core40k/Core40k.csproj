@@ -17,8 +17,7 @@
     <Optimize>true</Optimize>
     <RimWorldDir>..\..\..\..\..\</RimWorldDir>
     <WorkshopDir>..\..\..\..\..\..\..\workshop\content\294100\</WorkshopDir>
-    <VefDir>$(WorkshopDir)2023507013\1.6\Assemblies\</VefDir>
-    <VefDir Condition="Exists('$(WorkshopDir)2023507013\1.7\Assemblies\VEF.dll')">$(WorkshopDir)2023507013\1.7\Assemblies\</VefDir>
+    <VefDir>$(WorkshopDir)2023507013\1.7\Assemblies\</VefDir>
   </PropertyGroup>
 
   <ItemGroup>
@@ -58,14 +57,6 @@
       <HintPath>$(VefDir)VEF.dll</HintPath>
       <Private>False</Private>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup Condition="!Exists('$(WorkshopDir)2023507013\1.7\Assemblies\VEF.dll')">
-    <ProjectReference Include="..\UnityFacades\UnityFacades.csproj" Private="false" />
-    <ProjectReference Include="..\UnityFacades\UnityFacades.csproj" AdditionalProperties="FacadeName=UnityEngine.IMGUIModule" Private="false" />
-    <ProjectReference Include="..\UnityFacades\UnityFacades.csproj" AdditionalProperties="FacadeName=UnityEngine.TextRenderingModule" Private="false" />
-    <ProjectReference Include="..\UnityFacades\UnityFacades.csproj" AdditionalProperties="FacadeName=UnityEngine.PhysicsModule" Private="false" />
-    <ProjectReference Include="..\UnityFacades\UnityFacades.csproj" AdditionalProperties="FacadeName=UnityEngine.TilemapModule" Private="false" />
   </ItemGroup>
 
   <ItemGroup>
