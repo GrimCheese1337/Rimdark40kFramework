@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+    <ResearchTabDef>
+        <defName>BEWH_WH40kTab</defName>
+        <label>RimDark 40k</label>
+        <generalTitle>RimDark research projects</generalTitle>
+        <generalDescription>Unlock RimDark technologies.</generalDescription>
+    </ResearchTabDef>
+
+    <!--<ResearchTabDef>
+        <defName>BEWH_WH40kAdditionsTab</defName>
+        <label>RimDark Additions 40k</label>
+        <generalTitle>RimDark Additions research projects</generalTitle>
+        <generalDescription>Unlock RimDark Additions technologies.</generalDescription>
+    </ResearchTabDef>-->
+
+</Defs>

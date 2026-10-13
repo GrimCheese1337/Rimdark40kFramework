@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Default social thought carrying devotion opinions. The value comes from the resolved DevotionOpinion entry,
+       so the stage only supplies the label; content can point an entry's <thought> at its own def using the same
+       workerClass and thoughtClass for richer text. -->
+  <ThoughtDef>
+    <defName>BEWH_DevotionOpinion</defName>
+    <thoughtClass>Core40k.Thought_DevotionOpinion</thoughtClass>
+    <workerClass>Core40k.ThoughtWorker_DevotionOpinion</workerClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <stages>
+      <li>
+        <label>rival faith</label>
+        <baseOpinionOffset>0</baseOpinionOffset>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+</Defs>

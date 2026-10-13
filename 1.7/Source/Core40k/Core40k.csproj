@@ -1,0 +1,82 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Core40k</RootNamespace>
+    <AssemblyName>Core40k</AssemblyName>
+    <Configurations>Release</Configurations>
+    <OutputPath>../../Assemblies/</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <RimWorldDir>..\..\..\..\..\</RimWorldDir>
+    <WorkshopDir>..\..\..\..\..\..\..\workshop\content\294100\</WorkshopDir>
+    <VefDir>$(WorkshopDir)2023507013\1.6\Assemblies\</VefDir>
+    <VefDir Condition="Exists('$(WorkshopDir)2023507013\1.7\Assemblies\VEF.dll')">$(WorkshopDir)2023507013\1.7\Assemblies\</VefDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="packages\**;.idea\**" />
+    <None Remove="packages\**;.idea\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(RimWorldDir)Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityStubs">
+      <HintPath>$(RimWorldDir)UnityStubs.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Waylith">
+      <HintPath>$(RimWorldDir)Waylith.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Waylith.UnityCompat">
+      <HintPath>$(RimWorldDir)Waylith.UnityCompat.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Waylith.AssetBake">
+      <HintPath>$(RimWorldDir)Waylith.AssetBake.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(RimWorldDir)Brutal.*.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(WorkshopDir)2009463077\1.7\Assemblies\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="VEF">
+      <HintPath>$(VefDir)VEF.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('$(WorkshopDir)2023507013\1.7\Assemblies\VEF.dll')">
+    <ProjectReference Include="..\UnityFacades\UnityFacades.csproj" Private="false" />
+    <ProjectReference Include="..\UnityFacades\UnityFacades.csproj" AdditionalProperties="FacadeName=UnityEngine.IMGUIModule" Private="false" />
+    <ProjectReference Include="..\UnityFacades\UnityFacades.csproj" AdditionalProperties="FacadeName=UnityEngine.TextRenderingModule" Private="false" />
+    <ProjectReference Include="..\UnityFacades\UnityFacades.csproj" AdditionalProperties="FacadeName=UnityEngine.PhysicsModule" Private="false" />
+    <ProjectReference Include="..\UnityFacades\UnityFacades.csproj" AdditionalProperties="FacadeName=UnityEngine.TilemapModule" Private="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Krafs.Publicizer" Version="2.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Publicize Include="Assembly-CSharp:RimWorld.StatWorker.stat" />
+  </ItemGroup>
+
+</Project>

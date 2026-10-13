@@ -1,0 +1,48 @@
+﻿using RimWorld;
+using Verse;
+
+namespace Core40k;
+
+public class PawnRenderNodeWorker_AttachmentBackpack : PawnRenderNodeWorker
+{
+    public override bool CanDrawNow(PawnRenderNode node, PawnDrawParms parms)
+    {
+        var pawn = parms.pawn;
+        if (pawn == null)
+        {
+            return true;
+        }
+
+        if (parms.Portrait)
+        {
+            if ((parms.flags & PawnRenderFlags.Clothes) != PawnRenderFlags.Clothes)
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (parms.posture is PawnPosture.LayingOnGroundNormal or PawnPosture.LayingOnGroundFaceUp)
+            {
+                return true;
+            }
+                
+            if (parms.posture == PawnPosture.Standing)
+            {
+                return true;
+            }
+            
+            var mindState = pawn.mindState;
+            if (mindState != null && mindState.duty?.def?.drawBodyOverride.HasValue == true)
+            {
+                return pawn.mindState.duty.def.drawBodyOverride.Value;
+            }
+            if (parms.bed != null && parms.pawn.RaceProps.Humanlike)
+            {
+                return parms.bed.def.building.bed_showSleeperBody;
+            }
+        }
+            
+        return true;
+    }
+}

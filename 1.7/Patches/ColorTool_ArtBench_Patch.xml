@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+
+    <Operation Class="PatchOperationAddModExtension">
+        <xpath>Defs/ThingDef[defName="TableSculpting"]</xpath>
+        <value>
+            <li Class="Core40k.DefModExtension_AllowColoringOfThings">
+                <allowColoringOfApparel>true</allowColoringOfApparel>
+                <allowColoringOfEquipment>true</allowColoringOfEquipment>
+            </li>
+        </value>
+    </Operation>
+
+</Patch>

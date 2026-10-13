@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Default name generator for artifact weapons. A kind sets nameRulePack to replace it; the framework fills in
+       weapon_type (kind.namerLabels or the weapon label), trait_adjective (from the traits), kind (the kind label),
+       ANYPAWN_* (a random name) and BEARER_* (the wielder, when held). Root keyword: r_artifact_name. -->
+  <RulePackDef>
+    <defName>BEWH_NamerArtifactWeapon</defName>
+    <rulePack>
+      <rulesStrings>
+        <li>r_artifact_name->[trait_adjective] [weapon_type]</li>
+        <li>r_artifact_name->[trait_adjective] [weapon_type]</li>
+        <li>r_artifact_name->The [trait_adjective] [weapon_type]</li>
+        <li>r_artifact_name->[ANYPAWN_nameDef]'s [weapon_type]</li>
+        <li>r_artifact_name->[weapon_type] of [ANYPAWN_nameDef]</li>
+        <li>r_artifact_name->[ANYPAWN_nameDef]'s [trait_adjective] [weapon_type]</li>
+        <li>r_artifact_name->[epithet]</li>
+        <li>r_artifact_name->The [epithet]</li>
+
+        <li>epithet->[trait_adjective] one</li>
+        <li>epithet->[trait_adjective] [noun]</li>
+        <li>epithet->[noun] of [ANYPAWN_nameDef]</li>
+
+        <li>noun->Oath</li>
+        <li>noun->Vow</li>
+        <li>noun->Reckoning</li>
+        <li>noun->Answer</li>
+        <li>noun->Verdict</li>
+        <li>noun->Silence</li>
+        <li>noun->Ruin</li>
+        <li>noun->Ember</li>
+        <li>noun->Grave</li>
+        <li>noun->Hymn</li>
+        <li>noun->Fang</li>
+        <li>noun->Talon</li>
+        <li>noun->Thorn</li>
+        <li>noun->Dawn</li>
+        <li>noun->Dusk</li>
+      </rulesStrings>
+    </rulePack>
+  </RulePackDef>
+
+</Defs>

@@ -1,0 +1,52 @@
+﻿using UnityEngine;
+using Verse;
+
+namespace Core40k;
+
+public class PawnRenderNode_AttachmentExtraDecoration : PawnRenderNode
+{
+    public CompDecorativeBase decorativeComp;
+    public DecorationDef decorationDef;
+    
+    public PawnRenderNode_AttachmentExtraDecoration(Pawn pawn, PawnRenderNodeProperties props, PawnRenderTree tree) : base(pawn, props, tree)
+    {
+    }
+
+    public override Graphic GraphicFor(Pawn pawn)
+    {
+        var propsMulti = (PawnRenderNodePropertiesMultiColor)Props;
+
+        var texPath = propsMulti.texPath;
+        var shader = propsMulti.shaderTypeDef;
+        var maskPath = propsMulti.maskDef?.maskPath ?? string.Empty;
+        
+        var bodyType = propsMulti.bodyType ?? pawn?.story?.bodyType;
+        var useBodyType = propsMulti.useBodyType && bodyType != null;
+        var gender = pawn?.gender ?? Gender.None;
+
+        if (useBodyType)
+        {
+            texPath = BodyTypeUtils.BodyTypedPath(texPath, bodyType, gender);
+        }
+
+        if (maskPath != string.Empty)
+        {
+            if (useBodyType)
+            {
+                maskPath = BodyTypeUtils.BodyTypedMaskPath(maskPath, bodyType, gender) ?? maskPath;
+            }
+        }
+        else
+        {
+            maskPath = propsMulti.texPath;
+            if (useBodyType)
+            {
+                maskPath = BodyTypeUtils.BodyTypedMaskPath(maskPath, bodyType, gender) ?? maskPath;
+            }
+            maskPath += "_mask";
+        }
+        
+        return MultiColorUtils.GetGraphic<Graphic_Multi>(texPath, shader.Shader, propsMulti.drawSize, propsMulti.color ?? Color.white, propsMulti.colorTwo ?? Color.white, propsMulti.colorThree ?? Color.white, null, maskPath);
+
+    }
+}

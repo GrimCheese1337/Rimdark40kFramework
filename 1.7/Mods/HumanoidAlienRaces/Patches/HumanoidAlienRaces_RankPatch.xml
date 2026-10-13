@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/AlienRace.ThingDef_AlienRace/comps</xpath>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/AlienRace.ThingDef_AlienRace</xpath>
+            <value>
+                <comps>
+                    <li Class="Core40k.CompProperties_RankInfo"/>
+                </comps>
+            </value>
+        </nomatch>
+        <match Class="PatchOperationAdd">
+            <xpath>Defs/AlienRace.ThingDef_AlienRace/comps</xpath>
+            <value>
+                <li Class="Core40k.CompProperties_RankInfo"/>
+            </value>
+        </match>
+        <success>Always</success>
+    </Operation>
+
+</Patch>

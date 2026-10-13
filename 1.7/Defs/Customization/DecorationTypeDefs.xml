@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Defs>
+
+    <!-- Shared -->
+    <Core40k.DecorationTypeDef>
+        <defName>BEWH_UndefinedType</defName>
+        <label>Undefined</label>
+    </Core40k.DecorationTypeDef>
+
+    <Core40k.DecorationTypeDef>
+        <defName>BEWH_DecoCategory_Misc</defName>
+        <label>Misc</label>
+    </Core40k.DecorationTypeDef>
+
+    <!-- Default category for internal upgrades. Always drawn last in the Upgrades tab. -->
+    <Core40k.DecorationTypeDef>
+        <defName>BEWH_DecoCategory_Internal</defName>
+        <label>Internal</label>
+    </Core40k.DecorationTypeDef>
+
+    <Core40k.DecorationTypeDef>
+        <defName>BEWH_DecoCategory_Decals</defName>
+        <label>Decals</label>
+    </Core40k.DecorationTypeDef>
+
+    <Core40k.DecorationTypeDef>
+        <defName>BEWH_DecoCategory_Trinkets</defName>
+        <label>Trinkets</label>
+    </Core40k.DecorationTypeDef>
+
+    <Core40k.DecorationTypeDef>
+        <defName>BEWH_DecoCategory_Pseals</defName>
+        <label>Purity Seals</label>
+    </Core40k.DecorationTypeDef>
+
+    <!-- Weapon -->
+    <Core40k.DecorationTypeDef>
+        <defName>BEWH_DecoCategory_Sights</defName>
+        <label>Sights</label>
+    </Core40k.DecorationTypeDef>
+
+    <Core40k.DecorationTypeDef>
+        <defName>BEWH_DecoCategory_Wraps</defName>
+        <label>Wraps</label>
+    </Core40k.DecorationTypeDef>
+
+    <!-- Armor -->
+    <Core40k.DecorationTypeDef>
+        <defName>BEWH_DecoCategory_Fabrics</defName>
+        <label>Fabrics</label>
+    </Core40k.DecorationTypeDef>
+
+    <Core40k.DecorationTypeDef>
+        <defName>BEWH_DecoCategory_Grenades</defName>
+        <label>Grenades</label>
+    </Core40k.DecorationTypeDef>
+
+    <Core40k.DecorationTypeDef>
+        <defName>BEWH_DecoCategory_Pouches</defName>
+        <label>Pouches</label>
+    </Core40k.DecorationTypeDef>
+
+    <Core40k.DecorationTypeDef>
+        <defName>BEWH_DecoCategory_Halo</defName>
+        <label>Halos</label>
+    </Core40k.DecorationTypeDef>
+
+    <Core40k.DecorationTypeDef>
+        <defName>BEWH_DecoCategory_Relics</defName>
+        <label>Relics</label>
+    </Core40k.DecorationTypeDef>
+
+    <Core40k.DecorationTypeDef>
+        <defName>BEWH_DecoCategory_Shoulder</defName>
+        <label>Shoulder</label>
+    </Core40k.DecorationTypeDef>
+
+    <Core40k.DecorationTypeDef>
+        <defName>BEWH_DecoCategory_Wings</defName>
+        <label>Wings</label>
+    </Core40k.DecorationTypeDef>
+
+    <Core40k.DecorationTypeDef>
+        <defName>BEWH_DecoCategory_Brims</defName>
+        <label>Brims</label>
+    </Core40k.DecorationTypeDef>
+
+    <Core40k.DecorationTypeDef>
+        <defName>BEWH_DecoCategory_Insignia</defName>
+        <label>Insignia</label>
+    </Core40k.DecorationTypeDef>
+
+</Defs>

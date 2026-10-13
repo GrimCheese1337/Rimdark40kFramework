@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <StatDef>
+    <defName>BEWH_ArtificialPartsAffinityFactor</defName>
+    <label>artificial part affinity</label>
+    <description>A multiplier on how artificial parts affects the capacities of this pawn.</description>
+    <category>BasicsPawn</category>
+    <toStringStyle>PercentZero</toStringStyle>
+    <defaultBaseValue>1</defaultBaseValue>
+    <hideAtValue>1</hideAtValue>
+    <minValue>0.0001</minValue>
+    <showOnAnimals>false</showOnAnimals>
+    <showOnDrones>false</showOnDrones>
+  </StatDef>
+
+  <StatDef>
+    <defName>BEWH_RankLearningFactor</defName>
+    <label>rank learning multiplier</label>
+    <description>A multiplier on how much time spent as a rank a pawn needs before meeting days requirements.</description>
+    <category>BasicsPawn</category>
+    <toStringStyle>PercentZero</toStringStyle>
+    <defaultBaseValue>1</defaultBaseValue>
+    <hideAtValue>1</hideAtValue>
+    <minValue>0</minValue>
+    <showOnAnimals>false</showOnAnimals>
+    <showOnDrones>false</showOnDrones>
+  </StatDef>
+
+</Defs>

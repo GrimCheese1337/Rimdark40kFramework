@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <StatCategoryDef>
+    <defName>BEWH_DecorationOffsets</defName>
+    <label>Customization Offsets</label>
+    <displayOrder>85</displayOrder>
+    <displayAllByDefault>true</displayAllByDefault>
+  </StatCategoryDef>
+
+
+  <StatCategoryDef>
+    <defName>BEWH_DecorationFactors</defName>
+    <label>Customization Factors</label>
+    <displayOrder>86</displayOrder>
+    <displayAllByDefault>true</displayAllByDefault>
+  </StatCategoryDef>
+
+
+  <StatCategoryDef>
+    <defName>BEWH_AlternateTextureOffsets</defName>
+    <label>Alt. Texture Offsets</label>
+    <displayOrder>87</displayOrder>
+    <displayAllByDefault>true</displayAllByDefault>
+  </StatCategoryDef>
+
+  <StatCategoryDef>
+    <defName>BEWH_AlternateTextureFactors</defName>
+    <label>Alt. Factors</label>
+    <displayOrder>88</displayOrder>
+    <displayAllByDefault>true</displayAllByDefault>
+  </StatCategoryDef>
+
+
+  <StatCategoryDef>
+    <defName>BEWH_Customization</defName>
+    <label>Customization</label>
+    <displayOrder>200</displayOrder>
+    <displayAllByDefault>true</displayAllByDefault>
+  </StatCategoryDef>
+
+  <StatCategoryDef>
+    <defName>BEWH_Voidfaring</defName>
+    <label>Voidfaring</label>
+    <displayOrder>84</displayOrder>
+    <displayAllByDefault>true</displayAllByDefault>
+  </StatCategoryDef>
+
+  <StatCategoryDef>
+    <defName>BEWH_Shields</defName>
+    <label>Shield</label>
+    <displayOrder>83</displayOrder>
+    <displayAllByDefault>true</displayAllByDefault>
+  </StatCategoryDef>
+
+</Defs>

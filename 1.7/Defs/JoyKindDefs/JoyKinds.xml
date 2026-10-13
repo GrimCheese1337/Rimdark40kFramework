@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <JoyKindDef>
+    <defName>BEWH_RecreationFromSkill</defName>
+    <label>motivated work</label>
+    <needsThing>false</needsThing>
+  </JoyKindDef>
+
+</Defs>
