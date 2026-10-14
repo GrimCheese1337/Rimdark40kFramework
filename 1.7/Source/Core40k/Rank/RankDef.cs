@@ -157,9 +157,21 @@ public class RankDef : Def
         }
     }
     
+    [Unsaved]
+    private bool? overridesRequirementMet;
+
+    private static readonly StringBuilder DiscardedRequirementText = new();
+
     public bool RequirementMet(Pawn pawn, CompRankInfo rankComp, RankCategoryDef rankCategoryDef)
     {
-        return RequirementMet(null, pawn, rankComp, rankCategoryDef, out _);
+        overridesRequirementMet ??= GetType().GetMethod(nameof(RequirementMet), [typeof(StringBuilder), typeof(Pawn), typeof(CompRankInfo), typeof(RankCategoryDef), typeof(string).MakeByRefType()])?.DeclaringType != typeof(RankDef);
+        if (!overridesRequirementMet.Value)
+        {
+            return RequirementMet(null, pawn, rankComp, rankCategoryDef, out _);
+        }
+
+        DiscardedRequirementText.Clear();
+        return RequirementMet(DiscardedRequirementText, pawn, rankComp, rankCategoryDef, out _);
     }
 
     public virtual bool RequirementMet(StringBuilder stringBuilder, Pawn pawn, CompRankInfo rankComp, RankCategoryDef currentlySelectedRankCategory, out string reason)
