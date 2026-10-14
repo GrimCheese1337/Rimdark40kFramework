@@ -263,10 +263,9 @@ public class CompRankInfo : ThingComp
         
         rank.UnlockRank(this);
 
-        if (countTowardsLimit && RankUtils.IsLimited(rank))
+        if (RankUtils.IsLimited(rank))
         {
-            GameComponentRankInfo.PawnGainedRank(rank);
-            LimitCountedRanks.Add(rank);
+            GameComponentRankInfo.Notify_RankHoldersChanged();
         }
 
         InvalidateCaches();
@@ -284,17 +283,17 @@ public class CompRankInfo : ThingComp
             
         rank.RemoveRank(this);
 
-        var wasCountedTowardsLimit = LimitCountedRanks.Remove(rank);
+        LimitCountedRanks.Remove(rank);
 
-        if (removeFromRankLimit && wasCountedTowardsLimit)
+        if (RankUtils.IsLimited(rank))
         {
-            GameComponentRankInfo.PawnLostRank(rank);
+            GameComponentRankInfo.Notify_RankHoldersChanged();
         }
 
-        var newHighestRank = HighestRankDef(false);
-        if (newHighestRank != null && pawn.story != null)
+        if (pawn.story != null)
         {
-            pawn.story.Title = newHighestRank.label;
+            var newHighestRank = HighestRankDef(false);
+            pawn.story.Title = newHighestRank == null ? null : newHighestRank.newPawnCardTitle == string.Empty ? newHighestRank.label : newHighestRank.newPawnCardTitle;
         }
         
         InvalidateCaches();
@@ -443,20 +442,20 @@ public class CompRankInfo : ThingComp
         
     public override void Notify_Killed(Map prevMap, DamageInfo? dinfo = null)
     {
-        base.Notify_Killed(prevMap, dinfo); //TODO: Make patch for if they are resurrected?
+        base.Notify_Killed(prevMap, dinfo);
         foreach (var rank in UnlockedRanks)
         {
             rank.Notify_Killed(this, prevMap, dinfo);
         }
-        GameComponentRankInfo.PawnResetRanks(LimitCountedRanks.ToList());
         LimitCountedRanks.Clear();
+        GameComponentRankInfo.Notify_RankHoldersChanged();
     }
 
     public override void PostDestroy(DestroyMode mode, Map previousMap)
     {
         base.PostDestroy(mode, previousMap);
-        GameComponentRankInfo.PawnResetRanks(LimitCountedRanks.ToList());
         LimitCountedRanks.Clear();
+        GameComponentRankInfo.Notify_RankHoldersChanged();
     }
 
     public void IncreaseDaysForAllRank()

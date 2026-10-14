@@ -808,6 +808,11 @@ public class CompGeneCustomization : ThingComp
         Scribe_Collections.Look(ref choices, "choices", LookMode.Deep);
         Scribe_Collections.Look(ref announcedVariants, "announcedVariants", LookMode.Def);
 
+        if (Scribe.mode == LoadSaveMode.LoadingVars)
+        {
+            choices ??= [];
+        }
+
         if (Scribe.mode != LoadSaveMode.PostLoadInit)
         {
             return;

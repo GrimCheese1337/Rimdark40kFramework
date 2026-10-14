@@ -248,6 +248,8 @@
   <!-- "Every{2} colonist" from the text below is on purpose and should stay as so -->
   <BEWH.Framework.RankSystem.RequirementsLimit>Only {0} may have this rank at a time. \nEvery{2} colonist will increase this limit by 1. Currently {1} exists.</BEWH.Framework.RankSystem.RequirementsLimit>
   <BEWH.Framework.RankSystem.RequirementsLimitOnlyOneEver>Only {0} may ever have this rank. Currently {1} exists.</BEWH.Framework.RankSystem.RequirementsLimitOnlyOneEver>
+  <BEWH.Framework.RankSystem.RankLimitReached>The colony already has as many of {0} as it is allowed.</BEWH.Framework.RankSystem.RankLimitReached>
+  <BEWH.Framework.RankSystem.RankLostOverLimit>{PAWN_nameDef} lost the rank {RANK}: the colony already has as many as it is allowed.</BEWH.Framework.RankSystem.RankLostOverLimit>
 
   <BEWH.Framework.RankSystem.HaveBeenRankForDays>Must have been a {0} for at least {1} days</BEWH.Framework.RankSystem.HaveBeenRankForDays>
   <BEWH.Framework.RankSystem.HaveAchievedRank>Must have achieved the rank of {0}</BEWH.Framework.RankSystem.HaveAchievedRank>

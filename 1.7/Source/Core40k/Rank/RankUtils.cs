@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using RimWorld;
 using Verse;
 
 namespace Core40k;
@@ -34,6 +35,45 @@ public static class RankUtils
     public static bool IsLimited(RankDef rank)
     {
         return rank.colonyLimitOfRank.x > 0 || (rank.colonyLimitOfRank.x == 0 && rank.colonyLimitOfRank.y > 0);
+    }
+
+    /// <summary>
+    /// Whether this pawn's limited ranks take up the player's rank slots: alive, of the player faction, not a prisoner or slave.
+    /// </summary>
+    public static bool CountsTowardsRankLimits(Pawn pawn)
+    {
+        return pawn is { Dead: false, Faction.IsPlayer: true } && !pawn.IsPrisoner && !pawn.IsSlave;
+    }
+
+    /// <summary>
+    /// Removes the limited ranks this pawn holds that put the colony over the rank limit.
+    /// </summary>
+    public static void StripRanksOverLimit(Pawn pawn)
+    {
+        if (Current.ProgramState != ProgramState.Playing || !CountsTowardsRankLimits(pawn))
+        {
+            return;
+        }
+
+        var comp = pawn.GetComp<CompRankInfo>();
+        if (comp == null || comp.UnlockedRanks.NullOrEmpty())
+        {
+            return;
+        }
+
+        var gameComp = comp.GameComponentRankInfo;
+        gameComp.Notify_RankHoldersChanged();
+
+        foreach (var rank in comp.UnlockedRanks.Where(IsLimited).OrderByDescending(rank => rank.rankTier).ToList())
+        {
+            if (!comp.HasRank(rank) || gameComp.CurrentAmountOfRank(rank) <= gameComp.AllowedAmountOfRank(rank))
+            {
+                continue;
+            }
+
+            comp.RemoveRank(rank, true);
+            Messages.Message("BEWH.Framework.RankSystem.RankLostOverLimit".Translate(pawn.Named("PAWN"), rank.label.Named("RANK")), pawn, MessageTypeDefOf.NegativeEvent);
+        }
     }
 
     public static void TryGivePawnKindRanks(Pawn pawn)

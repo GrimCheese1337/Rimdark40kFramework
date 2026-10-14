@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using RimWorld;
 using Verse;
 
@@ -15,6 +14,14 @@ public class GameComponent_RankInfo : GameComponent
     private int cachedColonistCount = -1;
     private int cachedColonistCountTick = -1;
 
+    private const int CountRefreshIntervalTicks = 2500;
+
+    private readonly Dictionary<RankDef, int> heldRankCounts = new Dictionary<RankDef, int>();
+
+    private readonly HashSet<Pawn> countedPawns = [];
+
+    private bool heldRankCountsDirty = true;
+
     public GameComponent_RankInfo(Game game)
     {
     }
@@ -23,6 +30,11 @@ public class GameComponent_RankInfo : GameComponent
     {
         base.GameComponentTick();
         RankEligibilityNotifier.Tick();
+
+        if (Find.TickManager.TicksGame % CountRefreshIntervalTicks == 0)
+        {
+            heldRankCountsDirty = true;
+        }
     }
 
     public override void StartedNewGame()
@@ -33,35 +45,64 @@ public class GameComponent_RankInfo : GameComponent
     }
 
     /// <summary>
-    /// Rebuilds the rank limit counts from the player's living pawns.
+    /// Marks the held rank counts for rebuilding on next use.
     /// </summary>
     public void RecountRankLimits()
     {
-        rankLimits.Clear();
+        heldRankCountsDirty = true;
+        cachedColonistCountTick = -1;
+    }
 
-        foreach (var pawn in PawnsFinder.AllMapsCaravansAndTravellingTransporters_Alive_OfPlayerFaction)
+    /// <summary>
+    /// Marks the held rank counts for rebuilding on next use.
+    /// </summary>
+    public void Notify_RankHoldersChanged()
+    {
+        heldRankCountsDirty = true;
+    }
+
+    private void EnsureHeldRankCounts()
+    {
+        if (!heldRankCountsDirty)
         {
+            return;
+        }
+
+        heldRankCountsDirty = false;
+        heldRankCounts.Clear();
+        countedPawns.Clear();
+
+        foreach (var pawn in PawnsFinder.AllMapsWorldAndTemporary_Alive)
+        {
+            if (!RankUtils.CountsTowardsRankLimits(pawn) || !countedPawns.Add(pawn))
+            {
+                continue;
+            }
+
             var comp = pawn.GetComp<CompRankInfo>();
             if (comp == null)
             {
                 continue;
             }
 
-            comp.LimitCountedRanks.Clear();
-
-            foreach (var rank in comp.UnlockedRanks.Where(RankUtils.IsLimited))
+            foreach (var rank in comp.UnlockedRanks)
             {
-                PawnGainedRank(rank);
-                comp.LimitCountedRanks.Add(rank);
+                if (rank == null || !RankUtils.IsLimited(rank))
+                {
+                    continue;
+                }
+
+                heldRankCounts[rank] = heldRankCounts.TryGetValue(rank, out var count) ? count + 1 : 1;
             }
         }
 
-        cachedColonistCountTick = -1;
+        countedPawns.Clear();
     }
 
     public override void LoadedGame()
     {
         base.LoadedGame();
+        heldRankCountsDirty = true;
 
         if (eligibilityBaselineDone)
         {
@@ -74,79 +115,28 @@ public class GameComponent_RankInfo : GameComponent
 
     public void PawnResetRanks(List<RankDef> unlockedRanks)
     {
-        foreach (var rankDef in unlockedRanks.Where(rankDef => rankDef.colonyLimitOfRank.x > 0 || (rankDef.colonyLimitOfRank.x == 0 && rankDef.colonyLimitOfRank.y > 0)))
-        {
-            if (!rankLimits.ContainsKey(rankDef))
-            {
-                continue;
-            }
-            if (rankLimits[rankDef] == 1)
-            {
-                rankLimits.Remove(rankDef);
-            }
-            else
-            {
-                rankLimits[rankDef] -= 1;
-            }
-        }
+        heldRankCountsDirty = true;
     }
 
     public void PawnLostRank(RankDef rankDef)
     {
-        if (!rankLimits.ContainsKey(rankDef))
-        {
-            return;
-        }
-        if (rankLimits[rankDef] == 1)
-        {
-            rankLimits.Remove(rankDef);
-        }
-        else
-        {
-            rankLimits[rankDef] -= 1;
-        }
+        heldRankCountsDirty = true;
     }
 
     public void PawnGainedRank(RankDef rankDef)
     {
-        if (rankLimits.ContainsKey(rankDef))
-        {
-            rankLimits[rankDef] += 1;
-        }
-        else
-        {
-            rankLimits.Add(rankDef, 1);
-        }
+        heldRankCountsDirty = true;
     }
         
     public bool CanHaveMoreOfRank(RankDef rankDef)
     {
-        var playerPawnAmount = GetColonistForCounting();
-                
-        var allowedAmount = rankDef.colonyLimitOfRank.y > 0 ? rankDef.colonyLimitOfRank.x + Math.Floor(playerPawnAmount/rankDef.colonyLimitOfRank.y) : rankDef.colonyLimitOfRank.x;
-                
-        var currentAmount = 0;
-
-        if (rankLimits.ContainsKey(rankDef))
-        {
-            currentAmount = rankLimits.TryGetValue(rankDef);
-        }
-
-        return allowedAmount > currentAmount;
+        return AllowedAmountOfRank(rankDef) > CurrentAmountOfRank(rankDef);
     }
         
     public (bool allowed, int allowedAmount, int currentAmount) CanHaveMoreOfRankWithInfo(RankDef rankDef)
     {
-        var playerPawnAmount = GetColonistForCounting();
-                
-        var allowedAmount = (int)(rankDef.colonyLimitOfRank.y > 0 ? rankDef.colonyLimitOfRank.x + Math.Floor(playerPawnAmount/rankDef.colonyLimitOfRank.y) : rankDef.colonyLimitOfRank.x);
-                
-        var currentAmount = 0;
-
-        if (rankLimits.ContainsKey(rankDef))
-        {
-            currentAmount = rankLimits.TryGetValue(rankDef);
-        }
+        var allowedAmount = AllowedAmountOfRank(rankDef);
+        var currentAmount = CurrentAmountOfRank(rankDef);
 
         return (allowedAmount > currentAmount, allowedAmount, currentAmount);
     }
@@ -162,14 +152,8 @@ public class GameComponent_RankInfo : GameComponent
 
     public int CurrentAmountOfRank(RankDef rankDef)
     {
-        var currentAmount = 0;
-
-        if (rankLimits.ContainsKey(rankDef))
-        {
-            currentAmount = rankLimits.TryGetValue(rankDef);
-        }
-
-        return currentAmount;
+        EnsureHeldRankCounts();
+        return heldRankCounts.TryGetValue(rankDef, out var count) ? count : 0;
     }
         
     private int GetColonistForCounting()
@@ -223,5 +207,11 @@ public class GameComponent_RankInfo : GameComponent
         base.ExposeData();
         Scribe_Collections.Look(ref rankLimits, "rankLimits");
         Scribe_Values.Look(ref eligibilityBaselineDone, "eligibilityBaselineDone", false);
+
+        if (Scribe.mode == LoadSaveMode.PostLoadInit)
+        {
+            rankLimits ??= new Dictionary<RankDef, int>();
+            heldRankCountsDirty = true;
+        }
     }
 }

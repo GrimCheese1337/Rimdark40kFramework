@@ -506,7 +506,18 @@ public class ITab_RankSystem : ITab
                 listingRankInfo.Indent(viewRect.width * 0.25f);
                 if (listingRankInfo.ButtonText("BEWH.Framework.RankSystem.UnlockRank".Translate(), widthPct: 0.5f))
                 {
-                    void Action() => UnlockRank(currentlySelectedRank.rankDef);
+                    var rankToUnlock = currentlySelectedRank.rankDef;
+                    void Action()
+                    {
+                        if (RankUtils.IsLimited(rankToUnlock) && !compRankInfo.GameComponentRankInfo.CanHaveMoreOfRank(rankToUnlock))
+                        {
+                            Messages.Message("BEWH.Framework.RankSystem.RankLimitReached".Translate(rankToUnlock.label), pawn, MessageTypeDefOf.RejectInput, false);
+                            redoRankInfo = true;
+                            return;
+                        }
+
+                        UnlockRank(rankToUnlock);
+                    }
                     if (ModSettings.confirmRankUnlock)
                     {
                         var window = Dialog_MessageBox.CreateConfirmation("BEWH.Framework.RankSystem.UnlockRankConfirm".Translate(pawn, currentlySelectedRank.rankDef.label), Action, destructive: true);
