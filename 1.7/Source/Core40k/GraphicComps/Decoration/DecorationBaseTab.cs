@@ -414,7 +414,9 @@ public class DecorationBaseTab : CustomizerTabDrawer
     {
         var drawDataText = drawData.GetDataForXml();
                 
-        var toClipboard = $"<weaponSpecificDrawData><li><key>{selectedPrecisionDef.defName}</key><value>{drawDataText}</value></li></weaponSpecificDrawData>";
+        var toClipboard = selectedPrecisionComp.parent is Apparel
+            ? $"<apparelSpecificDrawData><li><key>{selectedPrecisionComp.parent.def.defName}</key><value>{drawDataText}</value></li></apparelSpecificDrawData>"
+            : $"<weaponSpecificDrawData><li><key>{selectedPrecisionDef.defName}</key><value>{drawDataText}</value></li></weaponSpecificDrawData>";
                 
         GUIUtility.systemCopyBuffer = toClipboard;
         Messages.Message("Copied draw data to clipboard.", MessageTypeDefOf.TaskCompletion, false);
@@ -1142,4 +1144,4 @@ public class DecorationBaseTab : CustomizerTabDrawer
             decorativeComp.Reset();
         }
     }
-}
+}

@@ -1003,6 +1003,12 @@ public class CompDecorativeBase : CompGraphicParent
             offset += data.GetData(rot).offset;
         }
 
+        var apparelData = ApparelSpecificDrawDataFor(decorationDef);
+        if (apparelData != null)
+        {
+            offset += apparelData.GetData(rot).offset;
+        }
+
         return offset;
     }
     public virtual float GetAdditionalLayerForRot(Rot4 rot, DecorationDef decorationDef)
@@ -1012,6 +1018,12 @@ public class CompDecorativeBase : CompGraphicParent
         if (drawDatas.TryGetValue(decorationDef, out var data))
         {
             layer += data.GetData(rot).layer;
+        }
+
+        var apparelData = ApparelSpecificDrawDataFor(decorationDef);
+        if (apparelData != null)
+        {
+            layer += apparelData.GetData(rot).layer;
         }
 
         return layer;
@@ -1025,7 +1037,22 @@ public class CompDecorativeBase : CompGraphicParent
             scale *= data.GetData(rot).scale;
         }
 
+        var apparelData = ApparelSpecificDrawDataFor(decorationDef);
+        if (apparelData != null)
+        {
+            scale *= apparelData.GetData(rot).scale;
+        }
+
         return scale;
+    }
+
+    private DecorationDrawData ApparelSpecificDrawDataFor(DecorationDef decorationDef)
+    {
+        if (decorationDef is not ExtraDecorationDef extraDecorationDef || parent is not Apparel)
+        {
+            return null;
+        }
+        return extraDecorationDef.ApparelSpecificDrawDataFor(parent.def);
     }
     
     //Notifi's
@@ -1432,4 +1459,4 @@ public class CompDecorativeBase : CompGraphicParent
 
         TryAddCachedStat(Pawn);
     }
-}
+}
